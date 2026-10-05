@@ -1,0 +1,294 @@
+{
+  "version": "2026-10-01",
+  "source": "Department of Land Resources, Government of India (official ROR portal directory)",
+  "states": [
+    {
+      "id": 1,
+      "name": "Andaman and Nicobar Islands",
+      "language": "English",
+      "tesseract": "eng",
+      "official_ror_portal": "db.and.nic.in",
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 2,
+      "name": "Andhra Pradesh",
+      "language": "Telugu",
+      "tesseract": "tel",
+      "official_ror_portal": "meebhoomi.ap.gov.in",
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 3,
+      "name": "Arunachal Pradesh",
+      "language": "English",
+      "tesseract": "eng",
+      "official_ror_portal": null,
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 4,
+      "name": "Assam",
+      "language": "Assamese",
+      "tesseract": "asm",
+      "official_ror_portal": "https://revenue.assam.gov.in/",
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 5,
+      "name": "Bihar",
+      "language": "Hindi",
+      "tesseract": "hin",
+      "official_ror_portal": "https://biharbhumi.bihar.gov.in/",
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 6,
+      "name": "Chandigarh",
+      "language": "Hindi",
+      "tesseract": "hin",
+      "official_ror_portal": "https://revenue.chd.gov.in/",
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 7,
+      "name": "Chhattisgarh",
+      "language": "Hindi",
+      "tesseract": "hin",
+      "official_ror_portal": "https://cg.nic.in/",
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 8,
+      "name": "Goa",
+      "language": "Konkani",
+      "tesseract": "eng",
+      "official_ror_portal": "https://dslr.goa.gov.in/",
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 9,
+      "name": "Gujarat",
+      "language": "Gujarati",
+      "tesseract": "guj",
+      "official_ror_portal": "https://anyror.gujarat.gov.in/",
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 10,
+      "name": "Haryana",
+      "language": "Hindi",
+      "tesseract": "hin",
+      "official_ror_portal": "https://jamabandi.nic.in/",
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 11,
+      "name": "Himachal Pradesh",
+      "language": "Hindi",
+      "tesseract": "hin",
+      "official_ror_portal": "https://himbhoomilmk.nic.in/",
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 12,
+      "name": "Jammu and Kashmir",
+      "language": "Urdu",
+      "tesseract": "urd",
+      "official_ror_portal": "https://landrecords.jk.gov.in/",
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 13,
+      "name": "Jharkhand",
+      "language": "Hindi",
+      "tesseract": "hin",
+      "official_ror_portal": "https://jharbhoomi.jharkhand.gov.in/",
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 14,
+      "name": "Karnataka",
+      "language": "Kannada",
+      "tesseract": "kan",
+      "official_ror_portal": "https://rdservices.karnataka.gov.in/",
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 15,
+      "name": "Kerala",
+      "language": "Malayalam",
+      "tesseract": "mal",
+      "official_ror_portal": "https://revenue.kerala.gov.in/",
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 16,
+      "name": "Ladakh",
+      "language": "English",
+      "tesseract": "eng",
+      "official_ror_portal": null,
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 17,
+      "name": "Lakshadweep",
+      "language": "Malayalam",
+      "tesseract": "mal",
+      "official_ror_portal": "https://land.utl.gov.in/",
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 18,
+      "name": "Madhya Pradesh",
+      "language": "Hindi",
+      "tesseract": "hin",
+      "official_ror_portal": "https://mpbhulekh.gov.in/",
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 19,
+      "name": "Maharashtra",
+      "language": "Marathi",
+      "tesseract": "mar",
+      "official_ror_portal": "https://mahabhumi.gov.in/",
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 20,
+      "name": "Manipur",
+      "language": "Meitei",
+      "tesseract": "eng",
+      "official_ror_portal": "https://louchapathap.nic.in/",
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 21,
+      "name": "Meghalaya",
+      "language": "English",
+      "tesseract": "eng",
+      "official_ror_portal": null,
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 22,
+      "name": "Mizoram",
+      "language": "Mizo",
+      "tesseract": "eng",
+      "official_ror_portal": null,
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 23,
+      "name": "Nagaland",
+      "language": "English",
+      "tesseract": "eng",
+      "official_ror_portal": null,
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 24,
+      "name": "NCT of Delhi",
+      "language": "Hindi",
+      "tesseract": "hin",
+      "official_ror_portal": "https://dlrc.delhigovt.nic.in/",
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 25,
+      "name": "Odisha",
+      "language": "Odia",
+      "tesseract": "ori",
+      "official_ror_portal": "https://bhulekh.ori.nic.in/",
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 26,
+      "name": "Puducherry",
+      "language": "Tamil",
+      "tesseract": "tam",
+      "official_ror_portal": "https://www.nilamagal.py.gov.in/",
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 27,
+      "name": "Punjab",
+      "language": "Punjabi",
+      "tesseract": "pan",
+      "official_ror_portal": "https://revenue.punjab.gov.in/",
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 28,
+      "name": "Rajasthan",
+      "language": "Hindi",
+      "tesseract": "hin",
+      "official_ror_portal": "https://apnakhata.raj.nic.in/",
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 29,
+      "name": "Sikkim",
+      "language": "English",
+      "tesseract": "eng",
+      "official_ror_portal": null,
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 30,
+      "name": "Tamil Nadu",
+      "language": "Tamil",
+      "tesseract": "tam",
+      "official_ror_portal": "https://eservices.tn.gov.in/",
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 31,
+      "name": "Telangana",
+      "language": "Telugu",
+      "tesseract": "tel",
+      "official_ror_portal": "https://webland.telangana.gov.in/",
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 32,
+      "name": "Dadra and Nagar Haveli and Daman and Diu",
+      "language": "Gujarati",
+      "tesseract": "guj",
+      "official_ror_portal": "https://sugam.dddgov.in/",
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 33,
+      "name": "Tripura",
+      "language": "Bengali",
+      "tesseract": "ben",
+      "official_ror_portal": "https://jami.tripura.gov.in/",
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 34,
+      "name": "Uttarakhand",
+      "language": "Hindi",
+      "tesseract": "hin",
+      "official_ror_portal": "https://bhulekh.uk.gov.in/",
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 35,
+      "name": "Uttar Pradesh",
+      "language": "Hindi",
+      "tesseract": "hin",
+      "official_ror_portal": "https://upbhulekh.gov.in/",
+      "authority": "State / UT Revenue & Land Records Department"
+    },
+    {
+      "id": 36,
+      "name": "West Bengal",
+      "language": "Bengali",
+      "tesseract": "ben",
+      "official_ror_portal": "https://www.banglarbhumi.gov.in/",
+      "authority": "State / UT Revenue & Land Records Department"
+    }
+  ]
+}

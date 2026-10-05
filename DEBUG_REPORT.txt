@@ -1,0 +1,43 @@
+BhuRakshak debug/update report
+===============================
+
+Implemented in this build:
+- Digital document generation remains gated on officer verification (status=Verified).
+- Digital document is generated dynamically from the verified MongoDB land_records document.
+- Record ID is displayed prominently and included in the generated QR payload.
+- Indian Emblem, BhuRakshak logo and state-government logo are embedded where bundled assets are available (Bihar is bundled).
+- Cadastral map/naksha has been removed from the generated digital document.
+- Large DEMO watermark / sample-owner content was removed from the generated digital document template.
+- Empty fields are omitted instead of rendering blank rows.
+- User/parent/land/registration details are rendered from the submitted record; no sample landowner values are hard-coded in the generator.
+- Supporting-document listing is not rendered inside the digital document; uploaded evidence remains available to authorized staff in the verification dashboard.
+- Verified records are normalized to High confidence in the staff record listing/status flow.
+- Officer Verify/Reject controls remain available in the Officer dashboard.
+- MongoDB remains the live persistence layer; SQLite is not used.
+- Officer local development credentials remain ID=DHEE14 and password=New@1234 unless overridden by environment variables.
+- index.html duplicate closing h2 tag was removed.
+
+Validation performed in this environment:
+- node -c server.js: PASS
+- node -c mongo-db.js: PASS
+- node -c public/script.js: PASS
+- node -c public/portal.js: PASS
+- public/index.html: one <body> and one </html> pair; duplicate closing h2 fixed.
+
+Full browser/database end-to-end testing could not be completed here because the ZIP does not contain node_modules and this execution environment cannot reliably install the npm dependencies / connect to the user's Windows MongoDB service. The code was therefore syntax-checked and statically inspected; run the project on the Windows machine with MongoDB running for final E2E verification.
+
+Important: The generated page intentionally retains a small prototype/reference notice so it cannot be mistaken for an official government certificate.
+
+2026-10-05 requested fixes
+---------------------------
+- Administrator login now uses two-factor verification: password + registered-mobile OTP after CAPTCHA.
+- Signup still verifies both phone and email OTPs, and after successful signup the user is redirected to the Login screen.
+- Removed the Record View Password field from the user land-record form and removed the verification dependency on that password.
+- Added Applicant Aadhaar Number to User Information. The submitted 12-digit number is validated but only its last four digits are retained; the full Aadhaar number is not stored or exposed.
+- Public verified-record viewing no longer asks for a record password.
+- QR codes in generated verified digital documents now encode an absolute /verify?record_id=... URL. Scanning the QR code opens a public verification page showing the verified document details.
+- Officer verification immediately opens the generated digital document after status changes to Verified.
+- Added MongoDB adapter support for admin lookup by user_id and land-record lookup by record_id used by OTP verification and QR verification.
+- Reset command remains `npm run reset-db`; the execution environment used for this build has no MongoDB server listening on 127.0.0.1:27017, so the live database could not be cleared from this environment. Run `npm run reset-db` on the machine/Atlas database after MongoDB is reachable.
+- Syntax checks passed for server.js, mongo-db.js, public/script.js and public/portal.js.
+- Local HTTP smoke test: the server starts and serves the main page even when MongoDB is offline; database-backed endpoints correctly report database unavailability instead of crashing the Node process.

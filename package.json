@@ -1,0 +1,20 @@
+{
+  "name": "bhurakshak",
+  "version": "1.1.0",
+  "description": "BhuRakshak Intelligent Land Record Digitization and Validation System",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "reset-db": "node reset-mongodb.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "mongodb": "^6.19.0",
+    "multer": "^2.0.2",
+    "pdf-parse": "^2.4.5",
+    "tesseract.js": "^7.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

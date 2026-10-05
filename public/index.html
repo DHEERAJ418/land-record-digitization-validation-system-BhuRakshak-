@@ -1,0 +1,2875 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        BhuRakshak | Intelligent Land Record System
+    </title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+
+    <style id="responsive-overrides">
+        /* ===== Responsive overrides ===== */
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        img,
+        svg,
+        video,
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+
+        main,
+        .page,
+        .hero,
+        .stats,
+        .workflow,
+        .digitize-layout,
+        .validation-cards,
+        .analytics,
+        .verification-grid,
+        .fields,
+        .verify-fields,
+        .upload-options,
+        .action-row,
+        .page-heading,
+        .support-home,
+        footer {
+            width: 100%;
+        }
+
+        .hero-content,
+        .document-preview,
+        .stat,
+        .workflow-card,
+        .upload-card,
+        .pipeline-card,
+        .data-card,
+        .table-card,
+        .map-card,
+        .review-card,
+        .rules-card,
+        .audit-card,
+        .chart-card,
+        .modal {
+            min-width: 0;
+        }
+
+        input,
+        select,
+        textarea,
+        button {
+            max-width: 100%;
+        }
+
+        /* Large tablets / smaller laptops */
+        @media (max-width: 1100px) {
+            .top-header {
+                gap: 16px;
+                padding: 14px 20px;
+            }
+
+            .government-text small {
+                display: none;
+            }
+
+            .header-actions {
+                gap: 7px;
+            }
+
+            .login {
+                padding-inline: 12px;
+            }
+
+            .hero {
+                grid-template-columns: 1fr;
+                gap: 28px;
+            }
+
+            .document-preview {
+                max-width: 620px;
+                margin-inline: auto;
+                width: 100%;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .workflow {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .workflow>span {
+                display: none;
+            }
+
+            .digitize-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .verification-grid,
+            .analytics {
+                grid-template-columns: 1fr;
+            }
+
+            .table-card {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .table-card table {
+                min-width: 850px;
+            }
+        }
+
+        /* Tablets */
+        @media (max-width: 800px) {
+            .top-header {
+                min-height: 68px;
+                padding: 10px 14px;
+            }
+
+            .government-brand {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .brand {
+                order: 2;
+            }
+
+            .header-actions {
+                order: 3;
+            }
+
+            .government-text h2 {
+                font-size: 16px;
+            }
+
+            .government-text p {
+                font-size: 11px;
+            }
+
+            .brand strong {
+                font-size: 18px;
+            }
+
+            .brand small {
+                display: none;
+            }
+
+            .header-actions .officer,
+            .header-actions .admin {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: clamp(34px, 7vw, 52px);
+                line-height: 1.08;
+            }
+
+            .hero-buttons {
+                flex-wrap: wrap;
+            }
+
+            .hero-buttons>button,
+            .support-home .primary-btn {
+                width: 100%;
+            }
+
+            .hero-stats {
+                gap: 12px;
+                flex-wrap: wrap;
+            }
+
+            .hero-stats>div {
+                flex: 1 1 30%;
+                min-width: 110px;
+            }
+
+            .section-heading {
+                margin-top: 36px;
+            }
+
+            .page-heading {
+                align-items: flex-start;
+                gap: 16px;
+                flex-direction: column;
+            }
+
+            .page-heading>* {
+                max-width: 100%;
+            }
+
+            .toolbar {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .toolbar input,
+            .toolbar select {
+                width: 100%;
+            }
+
+            .map-search {
+                display: grid;
+                grid-template-columns: 1fr repeat(4, 42px);
+                gap: 6px;
+            }
+
+            .map-search input {
+                grid-column: 1 / -1;
+                width: 100%;
+            }
+
+            .map-search button {
+                min-height: 42px;
+            }
+
+            .land-map {
+                min-height: 420px;
+            }
+
+            .map-info {
+                flex-wrap: wrap;
+                gap: 8px 14px;
+            }
+
+            .support-home {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            footer {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+        }
+
+        /* Phones */
+        @media (max-width: 600px) {
+            body {
+                font-size: 14px;
+            }
+
+            .top-header {
+                display: grid;
+                grid-template-columns: auto 1fr auto;
+                align-items: center;
+                gap: 9px;
+                padding: 9px 10px;
+            }
+
+            .government-brand {
+                display: contents;
+            }
+
+            .header-menu-btn {
+                grid-column: 1;
+                grid-row: 1;
+            }
+
+            .india-emblem {
+                display: none;
+            }
+
+            .government-text {
+                grid-column: 2;
+                grid-row: 1;
+                min-width: 0;
+            }
+
+            .government-text h2,
+            .government-text p {
+                margin: 0;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .government-text h2 {
+                font-size: 13px;
+            }
+
+            .government-text p {
+                font-size: 9px;
+            }
+
+            .brand {
+                grid-column: 2;
+                grid-row: 2;
+                justify-self: start;
+            }
+
+            .brand-symbol {
+                width: 30px;
+                height: 30px;
+                font-size: 15px;
+            }
+
+            .brand strong {
+                font-size: 16px;
+            }
+
+            .header-actions {
+                grid-column: 3;
+                grid-row: 1;
+                gap: 4px;
+            }
+
+            .lang {
+                padding: 5px 7px;
+                min-width: 32px;
+            }
+
+            main {
+                padding-inline: 12px;
+            }
+
+            .hero {
+                padding: 28px 0;
+                gap: 22px;
+            }
+
+            .hero-tag {
+                font-size: 10px;
+                line-height: 1.4;
+            }
+
+            .hero h1 {
+                font-size: clamp(30px, 10vw, 42px);
+            }
+
+            .hero p {
+                font-size: 14px;
+                line-height: 1.65;
+            }
+
+            .hero-stats {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+
+            .hero-stats>div {
+                min-width: 0;
+                padding: 9px 4px;
+            }
+
+            .hero-stats b {
+                font-size: 17px;
+            }
+
+            .hero-stats small {
+                font-size: 9px;
+                line-height: 1.25;
+            }
+
+            .document-preview {
+                padding: 4px;
+            }
+
+            .document {
+                padding: 18px;
+            }
+
+            .document-fields {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .stat {
+                padding: 15px;
+            }
+
+            .workflow {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .workflow-card {
+                width: 100%;
+            }
+
+            .section-heading h2,
+            .page-heading h2 {
+                font-size: 26px;
+                line-height: 1.2;
+            }
+
+            .upload-card,
+            .pipeline-card,
+            .data-card,
+            .review-card,
+            .rules-card,
+            .audit-card,
+            .chart-card {
+                padding: 16px;
+            }
+
+            .upload-options,
+            .fields,
+            .verify-fields {
+                grid-template-columns: 1fr;
+            }
+
+            .drop-area {
+                padding: 28px 14px;
+            }
+
+            .action-row,
+            .modal-actions {
+                flex-direction: column;
+            }
+
+            .action-row>*,
+            .modal-actions>* {
+                width: 100%;
+            }
+
+            .pipeline-step {
+                grid-template-columns: 34px 1fr 24px;
+                gap: 9px;
+            }
+
+            .pipeline-step small {
+                line-height: 1.35;
+            }
+
+            .table-card {
+                margin-inline: -2px;
+            }
+
+            .map-search {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .map-search input {
+                grid-column: 1 / -1;
+            }
+
+            .map-search button {
+                width: 100%;
+            }
+
+            .land-map {
+                min-height: 330px;
+            }
+
+            .map-info {
+                font-size: 11px;
+            }
+
+            .low-confidence strong {
+                font-size: 32px;
+            }
+
+            .audit-row {
+                grid-template-columns: 40px 1fr auto;
+                gap: 10px;
+            }
+
+            .audit-row strong {
+                font-size: 11px;
+            }
+
+            .bars {
+                min-height: 180px;
+            }
+
+            .accuracy-circle {
+                width: 150px;
+                height: 150px;
+            }
+
+            .modal-overlay {
+                padding: 10px;
+                align-items: flex-end;
+            }
+
+            .modal {
+                width: 100%;
+                max-height: 92vh;
+                overflow-y: auto;
+                border-radius: 18px 18px 0 0;
+                padding: 20px 16px;
+            }
+
+            .modal.large {
+                width: 100%;
+            }
+
+            .mobile-nav {
+                width: min(88vw, 330px);
+                max-width: 100%;
+            }
+        }
+
+        /* Very small phones */
+        @media (max-width: 380px) {
+            .government-text p {
+                display: none;
+            }
+
+            .hero-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-stats>div {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                text-align: left;
+            }
+
+            .map-search {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .map-search input {
+                grid-column: 1 / -1;
+            }
+        }
+
+        /* Accessibility / touch */
+        @media (hover: none) {
+
+            button,
+            input,
+            select,
+            textarea {
+                font-size: 16px;
+            }
+
+            button {
+                min-height: 42px;
+            }
+        }
+    </style>
+
+</head>
+<!-- USER LAND RECORD FORM -->
+
+<div class="modal-overlay" id="userInfoModal">
+
+    <div class="modal large">
+
+        <button class="close" type="button" data-close="userInfoModal">
+
+            ×
+
+        </button>
+
+
+        <div class="modal-icon">
+            🗂️
+        </div>
+
+
+        <small data-i18n="landSubmission">LAND RECORD SUBMISSION</small>
+
+
+        <h2 data-i18n="formTitle">User & Land Information</h2>
+
+
+        <p data-i18n="formDesc">Applicant, land, parent and supporting document information fill karein.</p>
+
+
+        <form id="userInfoForm" enctype="multipart/form-data">
+
+
+            <h3 class="form-section-title" data-i18n="applicantInfo">Applicant Information</h3>
+
+
+            <div class="verify-fields">
+
+                <label>
+                    <span data-i18n="fullName">Full Name</span>
+
+                    <input id="userName" class="name-only" data-i18n-placeholder="placeholderFullName" pattern="[^0-9]*"
+                        autocomplete="name" placeholder="Enter full name" name="user_name" required>
+
+                </label>
+
+
+                <label>
+                    <span data-i18n="mobileNumber">Mobile Number</span>
+
+                    <input id="userContact" class="number-only" data-i18n-placeholder="placeholderMobile"
+                        placeholder="Enter mobile number" name="user_contact" pattern="[0-9]{10}" maxlength="10"
+                        required inputmode="numeric">
+
+                </label>
+
+
+                <label>
+                    <span data-i18n="email">Email</span>
+
+                    <input id="userEmail" data-i18n-placeholder="placeholderEmail" placeholder="Enter email address"
+                        name="user_email" type="email">
+
+                </label>
+                <label>
+                    <span>Applicant Aadhaar Number</span>
+                    <input id="userAadhaar" class="number-only" name="applicant_aadhaar_number" inputmode="numeric"
+                        maxlength="12" pattern="[0-9]{12}" placeholder="12-digit Aadhaar number" required>
+                    <small class="field-help">For privacy, only the last 4 digits are retained in the application
+                        record.</small>
+                </label>
+
+
+
+            </div>
+
+
+            <h3 class="form-section-title" data-i18n="landInformation">Land Information</h3>
+
+
+            <div class="verify-fields">
+
+                <label>
+                    <span data-i18n="state">State</span>
+                    <select id="userState" name="state">
+                        <option value="" data-i18n="selectState">Select State / UT</option>
+                    </select>
+                </label>
+
+                <label>
+                    <span data-i18n="district">District</span>
+                    <select id="userDistrict" name="district" disabled>
+                        <option value="" data-i18n="selectDistrict">Select District</option>
+                    </select>
+                </label>
+
+
+                <label>
+                    <span data-i18n="subdivision">Subdivision</span>
+                    <input id="userSubdivision" name="subdivision">
+                </label>
+
+                <label>
+                    <span data-i18n="tehsilTaluk">Tehsil / Taluk</span>
+                    <input id="userTehsil" name="tehsil">
+                </label>
+
+                <label>
+                    <span data-i18n="circle">Circle / Anchal</span>
+                    <input id="userCircle" name="circle">
+                </label>
+
+                <label>
+                    <span data-i18n="revenueThana">Revenue Thana</span>
+                    <input id="userRevenueThana" name="revenue_thana">
+                </label>
+
+                <label>
+                    <span data-i18n="village">Village / Mouza</span>
+                    <input id="userVillage" name="village">
+                </label>
+
+                <label>
+                    <span data-i18n="villageCode">Village Code</span>
+                    <input id="userVillageCode" name="village_code">
+                </label>
+
+                <label class="field-span-2">
+                    <span data-i18n="address">Address</span>
+                    <textarea id="userAddress" name="address" rows="2" required></textarea>
+                </label>
+
+
+                <label>
+                    <span data-i18n="khasraSurvey">Khesara / Survey Number</span>
+
+                    <input id="userKhesara" class="number-slash-only" inputmode="numeric" name="khasra_number"
+                        pattern="[0-9\/-]+">
+
+                </label>
+
+
+                <label>
+                    <span data-i18n="khataKhatauni">Khata / Khatauni Number</span>
+
+                    <input id="userKhata" class="number-slash-only" name="khata_number" pattern="[0-9\/-]+">
+
+                </label>
+
+                <label>
+                    <span data-i18n="khatiyanNumber">Khatiyan / Jamabandi Number</span>
+                    <input id="userKhatiyan" class="number-slash-only" name="khatiyan_number" pattern="[0-9\/-]+">
+                </label>
+
+
+                <label>
+                    <span data-i18n="area">Area</span>
+
+                    <input id="userArea" name="area" data-i18n-placeholder="placeholderArea"
+                        placeholder="Example: 2.46 Hectare">
+
+                </label>
+
+
+                <label>
+                    <select id="userLandType" name="land_type">
+                        <option value="" data-i18n="selectLandType">Select Land Type</option>
+                        <option value="Agricultural" data-i18n="agricultural">Agricultural</option>
+                        <option value="Residential" data-i18n="residential">Residential</option>
+                        <option value="Commercial" data-i18n="commercial">Commercial</option>
+                        <option value="Industrial" data-i18n="industrial">Industrial</option>
+                        <option value="Government" data-i18n="government">Government</option>
+                    </select>
+
+                </label>
+
+
+                <label>
+                    <span data-i18n="ownershipType">Ownership Type</span>
+
+                    <select id="userOwnership" name="ownership_type">
+                        <option value="">Select Ownership Type</option>
+                        <option value="individual">Individual / Private Ownership</option>
+                        <option value="joint">Joint Ownership</option>
+                        <option value="ancestral">Family / Ancestral Property</option>
+                        <option value="government">Government Land</option>
+                        <option value="local_authority">Panchayat / Local Authority Land</option>
+                        <option value="trust">Trust / Religious / Charitable Property</option>
+                        <option value="institutional">Institutional / Educational Property</option>
+                        <option value="corporate">Company / Corporate Ownership</option>
+                        <option value="leasehold">Leasehold</option>
+                        <option value="other">Other</option>
+                    </select>
+
+                </label>
+
+
+                <label>
+                    <span data-i18n="registrationId">Registration ID</span>
+                    <input id="userRegistration" name="registration_id">
+                </label>
+
+                <label>
+                    <span data-i18n="surveyNumber">Survey Number</span>
+                    <input id="userSurveyNumber" name="survey_number" class="number-slash-only" pattern="[0-9\/-]+">
+                </label>
+
+                <label>
+                    <span data-i18n="plotNumber">Plot Number</span>
+                    <input id="userPlotNumber" name="plot_number" class="number-slash-only" pattern="[0-9\/-]+">
+                </label>
+
+                <label>
+                    <span data-i18n="ward">Ward</span>
+                    <input id="userWard" name="ward">
+                </label>
+
+                <label>
+                    <span data-i18n="pinCode">PIN Code</span>
+                    <input id="userPinCode" name="pin_code" inputmode="numeric" maxlength="6" pattern="[0-9]{6}">
+                </label>
+
+                <label>
+                    <span data-i18n="landClassification">Land Classification</span>
+                    <input id="userLandClassification" name="land_classification"
+                        placeholder="e.g. Agricultural / Residential">
+                </label>
+
+                <label>
+                    <span data-i18n="mutationStatus">Mutation Status</span>
+                    <select id="userMutationStatus" name="mutation_status">
+                        <option value="" data-i18n="selectMutationStatus">Select Mutation Status</option>
+                        <option value="Not Applied" data-i18n="mutationNotApplied">Not Applied</option>
+                        <option value="Pending" data-i18n="mutationPending">Pending</option>
+                        <option value="Under Process" data-i18n="mutationUnderProcess">Under Process</option>
+                        <option value="Approved / Registered" data-i18n="mutationApproved">Approved / Registered
+                        </option>
+                        <option value="Rejected" data-i18n="mutationRejected">Rejected</option>
+                        <option value="Not Available" data-i18n="mutationNotAvailable">Not Available</option>
+                    </select>
+                </label>
+
+            </div>
+
+            <h3 class="form-section-title">Registration / Parcel Details</h3>
+            <div class="verify-fields">
+                <label>
+                    <span data-i18n="registryDeedNumber">Registry / Deed Number</span>
+                    <input id="userRegistryDeedNumber" name="registry_deed_number">
+                </label>
+                <label>
+                    <span data-i18n="registryDate">Registry Date</span>
+                    <input id="userRegistryDate" name="registry_date" type="date">
+                </label>
+                <label>
+                    <span data-i18n="registrationOffice">Registration Office</span>
+                    <input id="userRegistrationOffice" name="registration_office">
+                </label>
+                <label>
+                    <span data-i18n="ulpin">ULPIN / Parcel ID</span>
+                    <input id="userUlpin" name="ulpin">
+                </label>
+            </div>
+
+            <h3 class="form-section-title">Father Details</h3>
+            <div class="verify-fields parent-section">
+                <label>
+                    <span>Father Name</span>
+                    <input id="fatherName" class="name-only" name="father_name" pattern="[^0-9]*" autocomplete="off"
+                        required>
+                </label>
+                <label>
+                    <span>Father Aadhaar Number</span>
+                    <input id="fatherAadhaar" class="number-only" name="father_aadhaar_number" inputmode="numeric"
+                        maxlength="12" pattern="[0-9]{12}" placeholder="12-digit Aadhaar" required>
+                </label>
+            </div>
+
+            <h3 class="form-section-title">Mother Details</h3>
+            <div class="verify-fields parent-section">
+                <label>
+                    <span>Mother Name</span>
+                    <input id="motherName" class="name-only" name="mother_name" pattern="[^0-9]*" autocomplete="off"
+                        required>
+                </label>
+            </div>
+
+            <h3 class="form-section-title" data-i18n="landBoundaries">Land Boundaries </h3>
+            <div class="verify-fields boundaries-fields">
+                <label><span data-i18n="boundaryEast">East</span><input id="userBoundaryEast"
+                        name="boundary_east"></label>
+                <label><span data-i18n="boundaryWest">West</span><input id="userBoundaryWest"
+                        name="boundary_west"></label>
+                <label><span data-i18n="boundaryNorth">North</span><input id="userBoundaryNorth"
+                        name="boundary_north"></label>
+                <label><span data-i18n="boundarySouth">South</span><input id="userBoundarySouth"
+                        name="boundary_south"></label>
+            </div>
+
+            <h3 class="form-section-title" data-i18n="supportingDocs">Supporting Documents</h3>
+
+
+            <p class="form-note">Father's Aadhaar is required for verification. Other supporting documents may be added
+                when applicable.</p>
+
+
+            <div class="document-checklist">
+                <label class="doc-input">
+                    <span data-i18n="primaryLandRecord">Primary Land Record / Deed</span>
+                    <input type="file" name="land_document" accept=".pdf,.jpg,.jpeg,.png">
+                    <small class="field-help" data-i18n="optionalDocument">Optional — upload whatever source document is
+                        available.</small>
+                </label>
+                <label class="doc-input">
+                    <span>Applicant Aadhaar</span>
+                    <input type="file" name="applicant_id_document" accept=".pdf,.jpg,.jpeg,.png" required>
+                    <small class="field-help">Required — upload the applicant's Aadhaar document.</small>
+                </label>
+                <label class="doc-input">
+                    <span>Father's Aadhaar</span>
+                    <input type="file" name="father_id_document" accept=".pdf,.jpg,.jpeg,.png" required>
+                    <small class="field-help">Required — upload the father's Aadhaar document.</small>
+                </label>
+                <label class="doc-input">
+                    <span data-i18n="addressProof">Address Proof</span>
+                    <input type="file" name="address_proof" accept=".pdf,.jpg,.jpeg,.png">
+                    <small class="field-help" data-i18n="addressProofHelp">Upload Aadhaar, utility bill, residence
+                        certificate or another valid address proof.</small>
+                </label>
+                <label class="doc-input">
+                    <span data-i18n="registryDeed">Registry / Sale Deed</span>
+                    <input type="file" name="registry_document" accept=".pdf,.jpg,.jpeg,.png">
+                </label>
+                <label class="doc-input">
+                    <span data-i18n="otherDocument">Other Supporting Document</span>
+                    <input type="file" name="other_document" accept=".pdf,.jpg,.jpeg,.png">
+                </label>
+            </div>
+
+
+            <div id="dbResult">
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button class="secondary-btn" type="button" data-close="userInfoModal">
+
+                    <span data-i18n="cancel">Cancel</span>
+
+                </button>
+
+
+                <button class="secondary-btn" type="button" id="saveUserDraft" data-form-action="save">
+
+                    <i class="fa-solid fa-floppy-disk"></i>
+
+                    <span>Save</span>
+
+                </button>
+
+                <button class="primary-btn" type="submit" data-form-action="submit">
+
+                    <i class="fa-solid fa-paper-plane"></i>
+
+                    <span>Save & Submit</span>
+
+                </button>
+
+            </div>
+
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- HUMAN VERIFICATION -->
+
+<div class="modal-overlay" id="humanVerificationModal">
+
+    <div class="modal large">
+
+        <button class="close" type="button" data-close="humanVerificationModal">
+
+            ×
+
+        </button>
+
+
+        <small>
+            HUMAN VERIFICATION
+        </small>
+
+
+        <h2 id="humanVerifyTitle">
+            Applicant Record
+        </h2>
+
+
+        <div id="humanVerifyBody">
+        </div>
+
+
+        <div class="modal-actions">
+            <button class="secondary-btn" type="button" data-close="humanVerificationModal">Close</button>
+            <button id="rejectApplicantRecord" class="secondary-btn danger" type="button" style="display:none">Reject
+                Record</button>
+            <button id="approveApplicantRecord" class="primary-btn" type="button" style="display:none">✓ Verify
+                Record</button>
+            <p class="field-help" style="margin:0">Verification and rejection are performed only by an authorized
+                Officer after document review.</p>
+        </div>
+
+    </div>
+
+</div>
+
+
+<body>
+
+    <!-- =====================================================
+     HEADER
+===================================================== -->
+
+    <header class="top-header">
+
+        <div class="government-brand">
+
+            <button class="header-menu-btn" id="menuButton" type="button" aria-label="Open Menu" aria-expanded="false">
+
+                <i class="fa-solid fa-bars"></i>
+
+            </button>
+
+
+            <div class="india-emblem">
+
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg"
+                    alt="State Emblem of India">
+
+                <span>
+                    सत्यमेव जयते
+                </span>
+
+            </div>
+
+
+            <div class="government-text">
+
+                <h2>
+                    भारत सरकार
+                </h2>
+
+                <p>
+                    Government of India
+                </p>
+
+                <small>
+                    Digital Land Governance
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div class="brand">
+            <img class="brand-logo-image" src="bhurakshak-logo.webp"
+                alt="BhuRakshak — Intelligent Land Record Digitization and Validation System">
+        </div>
+
+
+        <div class="header-actions">
+
+            <button class="lang active" data-lang="en" type="button" aria-label="English">
+                English
+            </button>
+            <button class="lang" data-lang="hi" type="button" aria-label="Hindi">
+                हिन्दी
+            </button>
+
+
+            <button class="login officer" data-login="officer" type="button">
+
+                <span data-i18n="officerLogin">Officer Login</span>
+
+            </button>
+
+
+            <button class="login admin" data-login="admin" type="button">
+
+                <span data-i18n="login">Login</span>
+
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+     SIDE NAVIGATION
+===================================================== -->
+
+    <aside class="mobile-nav" id="mobileNav" aria-hidden="true">
+
+        <div class="menu-header">
+
+            <strong>
+                Bhu<span>Rakshak</span>
+            </strong>
+
+
+            <button id="closeMenu" type="button" aria-label="Close Menu">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+
+        <button class="menu-item active" data-page="home" type="button">
+
+            <i class="fa-solid fa-house"></i>
+            <span data-i18n="home">Home</span>
+
+        </button>
+
+
+        <button class="menu-item" data-page="digitize" type="button">
+
+            <i class="fa-solid fa-file-arrow-up"></i>
+            <span data-i18n="digitize">Digitize Record</span>
+
+        </button>
+
+
+        <button class="menu-item" data-page="records" type="button">
+
+            <i class="fa-solid fa-database"></i>
+            <span data-i18n="records">Land Records</span>
+
+        </button>
+
+
+        <button class="menu-item" data-page="gis" type="button">
+
+            <i class="fa-solid fa-map-location-dot"></i>
+            <span data-i18n="gis">GIS Map</span>
+
+        </button>
+
+
+        <button class="menu-item" data-page="verification" type="button">
+
+            <i class="fa-solid fa-user-check"></i>
+            <span data-i18n="verification">
+                Verification
+            </span>
+
+        </button>
+
+
+        <button class="menu-item" data-page="validation" type="button">
+
+            <i class="fa-solid fa-shield-halved"></i>
+            <span data-i18n="validation">
+                Validation
+            </span>
+
+        </button>
+
+
+        <button class="menu-item" data-page="audit" type="button">
+
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span data-i18n="audit">
+                Audit Trail
+            </span>
+
+        </button>
+
+
+        <button class="menu-item" data-page="analytics" type="button">
+
+            <i class="fa-solid fa-chart-line"></i>
+            <span data-i18n="analytics">
+                Analytics
+            </span>
+
+        </button>
+
+
+        <div class="menu-divider"></div>
+
+
+        <button class="support-menu" type="button" data-login="officer">
+            <i class="fa-solid fa-user-shield"></i>
+            <span data-i18n="officerLogin">Officer Login</span>
+        </button>
+
+        <button class="support-menu" type="button" data-login="admin">
+            <i class="fa-solid fa-user-gear"></i>
+            <span data-i18n="login">Login</span>
+        </button>
+
+        <button class="support-menu" id="supportMenu" type="button">
+
+            <i class="fa-solid fa-headset"></i>
+
+            <span data-i18n="support">
+                Customer Support
+            </span>
+
+        </button>
+
+    </aside>
+
+
+    <div class="menu-overlay" id="menuOverlay">
+    </div>
+
+
+    <!-- =====================================================
+     MAIN
+===================================================== -->
+
+    <main>
+
+
+        <!-- =====================================================
+     HOME
+===================================================== -->
+
+        <section id="home" class="page active-page">
+
+            <div class="hero">
+
+                <div class="hero-content">
+
+                    <span class="hero-tag">
+                        🇮🇳 DIGITAL LAND GOVERNANCE • SIH 2026
+                    </span>
+
+
+                    <h1>
+
+                        <span data-i18n="hero1">
+                            From Paper
+                        </span>
+
+                        <br>
+
+                        <span data-i18n="hero2">
+                            to Trusted Digital Land Records
+                        </span>
+
+                    </h1>
+
+
+                    <p data-i18n="heroDesc">
+
+                        BhuRakshak is an AI-powered platform for
+                        digitizing legacy land records, extracting
+                        structured information, validating records,
+                        detecting duplicates and connecting records
+                        with GIS intelligence.
+
+                    </p>
+
+
+                    <div class="hero-buttons">
+
+                        <button class="primary-btn" data-page="digitize">
+
+                            <i class="fa-solid fa-file-arrow-up"></i>
+
+                            <span data-i18n="digitizeNew">
+                                Digitize New Record
+                            </span>
+
+                        </button>
+
+
+                        <button class="secondary-btn" data-page="gis">
+
+                            <i class="fa-solid fa-map"></i>
+
+                            <span data-i18n="exploreGIS">
+                                Explore India GIS
+                            </span>
+
+                        </button>
+
+                    </div>
+
+
+                    <div class="hero-stats">
+
+                        <div>
+                            <b id="heroAccuracy">100%</b>
+                            <small data-i18n="ocrAccuracy">
+                                AI OCR Accuracy
+                            </small>
+                        </div>
+
+                        <div>
+                            <b>12+</b>
+                            <small data-i18n="languages">
+                                Indian Languages
+                            </small>
+                        </div>
+
+                        <div>
+                            <b id="heroTotal">0</b>
+                            <small data-i18n="recordsDigitized">
+                                Records Digitized
+                            </small>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="document-preview">
+
+                    <div class="document">
+
+                        <div class="document-header">
+
+                            LAND RECORD
+
+                            <span>
+                                ✓ AI OCR
+                            </span>
+
+                        </div>
+
+
+                        <h3>
+                            LAND OWNERSHIP RECORD
+                        </h3>
+
+
+                        <div class="document-lines">
+
+                            <i></i>
+                            <i></i>
+                            <i class="short"></i>
+                            <i></i>
+
+                        </div>
+
+
+                        <div class="document-fields">
+
+                            <div>
+                                Khesara
+                                <b>184/2-A</b>
+                            </div>
+
+                            <div>
+                                Area
+                                <b>2.46 Ha</b>
+                            </div>
+
+                        </div>
+
+
+                        <div class="confidence">
+
+                            <span>
+                                AI Confidence
+                            </span>
+
+                            <b>
+                                94.2%
+                            </b>
+
+                        </div>
+
+
+                        <div class="confidence-bar">
+                            <i></i>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- STATS -->
+
+            <div class="stats">
+
+                <div class="stat">
+
+                    <span>
+                        <i class="fa-solid fa-file-circle-check"></i>
+                    </span>
+
+                    <div>
+
+                        <small data-i18n="recordsDigitized">
+                            RECORDS DIGITIZED
+                        </small>
+
+                        <strong id="statTotal">0</strong>
+
+                        <p data-i18n="legacyProcessed">
+                            Legacy records processed
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <span>
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </span>
+
+                    <div>
+
+                        <small data-i18n="extractionAccuracy">
+                            AI EXTRACTION ACCURACY
+                        </small>
+
+                        <strong class="green" id="statAccuracy">—</strong>
+
+                        <p data-i18n="averageConfidence">
+                            Average field confidence
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <span>
+                        <i class="fa-solid fa-user-clock"></i>
+                    </span>
+
+                    <div>
+
+                        <small data-i18n="verificationQueue">
+                            VERIFICATION QUEUE
+                        </small>
+
+                        <strong class="orange" id="queueCount">
+
+                            0
+
+                        </strong>
+
+                        <p data-i18n="awaitingReview">
+                            Awaiting officer review
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <span>
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </span>
+
+                    <div>
+
+                        <small data-i18n="duplicateAlerts">
+                            DUPLICATE ALERTS
+                        </small>
+
+                        <strong class="red" id="homeDuplicateAlerts">
+                            0
+                        </strong>
+
+                        <p data-i18n="possibleDuplicates">
+                            Possible duplicates
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- WORKFLOW -->
+
+            <div class="section-heading">
+
+                <small data-i18n="workflow">
+                    INTELLIGENT WORKFLOW
+                </small>
+
+                <h2 data-i18n="workflowTitle">
+                    From paper to trusted digital record
+                </h2>
+
+                <p data-i18n="workflowDesc">
+                    Every stage is connected through one
+                    intelligent workflow.
+                </p>
+
+            </div>
+
+
+            <div class="workflow">
+
+                <button class="workflow-card" data-page="digitize">
+
+                    <b>01</b>
+
+                    <strong>
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                    </strong>
+
+                    <h3 data-i18n="upload">
+                        Upload
+                    </h3>
+
+                    <p data-i18n="uploadDesc">
+                        Scanned PDF, image or handwritten document
+                    </p>
+
+                </button>
+
+
+                <span>→</span>
+
+
+                <button class="workflow-card" data-page="digitize">
+
+                    <b>02</b>
+
+                    <strong>
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </strong>
+
+                    <h3>
+                        AI-OCR
+                    </h3>
+
+                    <p data-i18n="ocrDesc">
+                        Printed and handwritten text extraction
+                    </p>
+
+                </button>
+
+
+                <span>→</span>
+
+
+                <button class="workflow-card" data-page="validation">
+
+                    <b>03</b>
+
+                    <strong>
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </strong>
+
+                    <h3 data-i18n="validate">
+                        Validate
+                    </h3>
+
+                    <p data-i18n="validateDesc">
+                        Rules, duplicates and cross verification
+                    </p>
+
+                </button>
+
+
+                <span>→</span>
+
+
+                <button class="workflow-card" data-page="verification">
+
+                    <b>04</b>
+
+                    <strong>
+                        <i class="fa-solid fa-user-check"></i>
+                    </strong>
+
+                    <h3 data-i18n="verify">
+                        Verify
+                    </h3>
+
+                    <p data-i18n="verifyDesc">
+                        Human review for uncertain fields
+                    </p>
+
+                </button>
+
+
+                <span>→</span>
+
+
+                <button class="workflow-card" data-page="gis">
+
+                    <b>05</b>
+
+                    <strong>
+                        <i class="fa-solid fa-map-location-dot"></i>
+                    </strong>
+
+                    <h3 data-i18n="integrate">
+                        Integrate
+                    </h3>
+
+                    <p data-i18n="integrateDesc">
+                        LRMS, DILRMP and GIS-ready records
+                    </p>
+
+                </button>
+
+            </div>
+
+
+            <div class="support-home">
+
+                <div>
+
+                    <small data-i18n="citizenSupport">
+                        CITIZEN & OFFICER SUPPORT
+                    </small>
+
+                    <h2 data-i18n="needHelp">
+                        Need help with a land record?
+                    </h2>
+
+                    <p data-i18n="supportDesc">
+                        Raise a support request for digitization,
+                        verification, record search or technical
+                        assistance.
+                    </p>
+
+                </div>
+
+
+                <button class="primary-btn" id="homeSupport">
+
+                    <i class="fa-solid fa-headset"></i>
+
+                    <span data-i18n="support">
+                        Customer Support
+                    </span>
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+     DIGITIZE
+===================================================== -->
+
+        <section id="digitize" class="page">
+
+            <div class="page-heading">
+
+                <div>
+
+                    <small data-i18n="documentProcessing">
+                        AI DOCUMENT PROCESSING
+                    </small>
+
+                    <h2 data-i18n="digitizeTitle">
+                        Digitize New Land Record
+                    </h2>
+
+                    <p data-i18n="digitizeDesc">
+                        Upload a scanned document, image or
+                        handwritten record.
+                    </p>
+
+                </div>
+
+                <span class="status-badge">
+                    ● AI Engine Ready
+                </span>
+
+            </div>
+
+
+            <div class="digitize-layout">
+
+                <div class="upload-card">
+
+                    <div class="drop-area" id="dropArea">
+
+                        <div class="upload-icon">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                        </div>
+
+
+                        <h3 data-i18n="dropDocument">
+                            Drop document here
+                        </h3>
+
+
+                        <p data-i18n="fileTypes">
+                            PDF, JPG, JPEG or PNG • Maximum 20 MB
+                        </p>
+
+
+                        <input type="file" id="fileInput" hidden accept=".pdf,.jpg,.jpeg,.png">
+
+
+                        <button class="primary-btn" id="chooseFile" type="button">
+
+                            <span data-i18n="chooseFile">
+                                Choose File
+                            </span>
+
+                        </button>
+
+
+                        <span id="fileName">
+                            No file selected
+                        </span>
+
+                    </div>
+
+
+                    <div class="upload-options">
+
+                        <label>
+
+                            <span data-i18n="documentLanguage">
+                                Document Language
+                            </span>
+
+                            <select id="documentLanguage">
+
+                                <option value="Hindi" data-i18n="hindi">Hindi</option>
+                                <option value="English" data-i18n="english">English</option>
+                                <option value="Marathi" data-i18n="marathi">Marathi</option>
+                                <option value="Bengali" data-i18n="bengali">Bengali</option>
+                                <option value="Tamil" data-i18n="tamil">Tamil</option>
+                                <option value="Telugu" data-i18n="telugu">Telugu</option>
+                                <option value="Kannada" data-i18n="kannada">Kannada</option>
+                                <option value="Gujarati" data-i18n="gujarati">Gujarati</option>
+
+                            </select>
+
+                        </label>
+
+
+                        <label>
+
+                            <span data-i18n="recordType">
+                                Record Type
+                            </span>
+
+                            <select>
+
+                                <option data-i18n="landOwnershipRecord">Land Ownership Record</option>
+                                <option data-i18n="mutationRecord">Mutation Record</option>
+                                <option data-i18n="registrationRecord">Registration Record</option>
+                                <option data-i18n="cadastralRecord">Cadastral Record</option>
+
+                            </select>
+
+                        </label>
+
+                    </div>
+
+
+                    <button class="process-btn" id="processButton" type="button">
+
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+
+                        <span data-i18n="startExtraction">
+                            Start AI Extraction
+                        </span>
+
+                    </button>
+
+                </div>
+
+
+                <div class="pipeline-card">
+
+                    <div class="card-title">
+
+                        <h3 data-i18n="processingPipeline">
+                            Processing Pipeline
+                        </h3>
+
+                        <span id="processStatus" data-i18n="waiting">
+                            Waiting
+                        </span>
+
+                    </div>
+
+
+                    <div class="pipeline">
+
+                        <div class="pipeline-step" id="step1">
+
+                            <b>01</b>
+
+                            <div>
+
+                                <strong data-i18n="imagePreprocessing">
+                                    Image preprocessing
+                                </strong>
+
+                                <small data-i18n="preprocessDesc">
+                                    Deskew, denoise & enhance
+                                </small>
+
+                            </div>
+
+                            <i>○</i>
+
+                        </div>
+
+
+                        <div class="pipeline-step" id="step2">
+
+                            <b>02</b>
+
+                            <div>
+
+                                <strong data-i18n="ocrExtraction">
+                                    AI-OCR extraction
+                                </strong>
+
+                                <small data-i18n="ocrTextDesc">
+                                    Printed + handwritten text
+                                </small>
+
+                            </div>
+
+                            <i>○</i>
+
+                        </div>
+
+
+                        <div class="pipeline-step" id="step3">
+
+                            <b>03</b>
+
+                            <div>
+
+                                <strong data-i18n="fieldClassification">
+                                    Field classification
+                                </strong>
+
+                                <small data-i18n="fieldMappingDesc">
+                                    Land record field mapping
+                                </small>
+
+                            </div>
+
+                            <i>○</i>
+
+                        </div>
+
+
+                        <div class="pipeline-step" id="step4">
+
+                            <b>04</b>
+
+                            <div>
+
+                                <strong data-i18n="validationEngine">
+                                    Validation engine
+                                </strong>
+
+                                <small data-i18n="validationDescShort">
+                                    Rules + duplicate checks
+                                </small>
+
+                            </div>
+
+                            <i>○</i>
+
+                        </div>
+
+
+                        <div class="pipeline-step" id="step5">
+
+                            <b>05</b>
+
+                            <div>
+
+                                <strong data-i18n="humanVerification">
+                                    Human verification
+                                </strong>
+
+                                <small data-i18n="humanVerificationDesc">
+                                    Route uncertain fields
+                                </small>
+
+                            </div>
+
+                            <i>○</i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="data-card">
+
+                <div class="card-title">
+
+                    <div>
+
+                        <small>
+                            AI OUTPUT
+                        </small>
+
+                        <h3 data-i18n="extractedRecord">
+                            Extracted Land Record
+                        </h3>
+
+                    </div>
+
+                    <span class="confidence-badge" id="aiConfidenceBadge">AI Engine Ready</span>
+
+                </div>
+
+
+                <div class="fields">
+
+                    <label>
+                        <span data-i18n="landowner">Landowner Name</span>
+                        <input id="aiLandownerName" value="" inputmode="text" autocomplete="off">
+                    </label>
+
+                    <label>
+                        <span data-i18n="surveyNumber">Survey Number</span>
+                        <input id="aiSurveyNumber" value="">
+                    </label>
+
+                    <label>
+                        <span data-i18n="khasra">Khesara Number</span>
+                        <input id="aiKhesaraNumber" value="">
+                    </label>
+
+                    <label>
+                        <span data-i18n="khataKhatauni">Khata Number</span>
+                        <input id="aiKhataNumber" value="">
+                    </label>
+
+                    <label>
+                        <span data-i18n="khatiyanNumber">Khatiyan / Jamabandi Number</span>
+                        <input id="aiKhatiyanNumber" value="">
+                    </label>
+
+                    <label>
+                        <span data-i18n="area">Plot Area</span>
+                        <input id="aiPlotArea" value="">
+                    </label>
+
+                    <label>
+                        <span data-i18n="village">Village</span>
+                        <input id="aiVillage" value="">
+                    </label>
+
+                    <label>
+                        <span data-i18n="tehsilTaluk">Tehsil</span>
+                        <input id="aiTehsil" value="">
+                    </label>
+
+                    <label>
+                        <span data-i18n="state">State / UT</span>
+                        <input id="aiState" value="">
+                    </label>
+
+                    <label>
+                        <span data-i18n="district">District</span>
+                        <input id="aiDistrict" value="">
+                    </label>
+
+                    <label>
+                        <span data-i18n="landClassification">Land Classification</span>
+                        <input id="aiLandClassification" value="">
+                    </label>
+
+                    <label>
+                        <span data-i18n="ownershipType">Ownership Type</span>
+                        <input id="aiOwnershipType" value="">
+                    </label>
+
+                    <label>
+                        <span data-i18n="mutationStatus">Mutation Status</span>
+                        <select id="aiMutationStatus">
+                            <option value="" data-i18n="selectMutationStatus">Select Mutation Status</option>
+                            <option value="Not Applied" data-i18n="mutationNotApplied">Not Applied</option>
+                            <option value="Pending" data-i18n="mutationPending">Pending</option>
+                            <option value="Under Process" data-i18n="mutationUnderProcess">Under Process</option>
+                            <option value="Approved / Registered" data-i18n="mutationApproved">Approved / Registered
+                            </option>
+                            <option value="Rejected" data-i18n="mutationRejected">Rejected</option>
+                            <option value="Not Available" data-i18n="mutationNotAvailable">Not Available</option>
+                        </select>
+                    </label>
+
+                    <label>
+                        <span data-i18n="registrationId">Registration ID</span>
+                        <input id="aiRegistrationId" value="">
+                    </label>
+
+                    <label><span data-i18n="circle">Circle / Anchal</span><input id="aiCircle" value=""></label>
+                    <label><span data-i18n="revenueThana">Revenue Thana</span><input id="aiRevenueThana"
+                            value=""></label>
+                    <label><span data-i18n="address">Full Address</span><input id="aiAddress" value=""></label>
+                    <label><span data-i18n="pinCode">PIN Code</span><input id="aiPinCode" value=""></label>
+                    <label><span data-i18n="villageCode">Village Code</span><input id="aiVillageCode" value=""></label>
+                    <label><span data-i18n="ward">Ward</span><input id="aiWard" value=""></label>
+                    <label><span data-i18n="plotNumber">Plot Number</span><input id="aiPlotNumber" value=""></label>
+                    <label><span data-i18n="ulpin">ULPIN / Parcel ID</span><input id="aiUlpin" value=""></label>
+                    <label><span data-i18n="registryDeedNumber">Registry / Deed No.</span><input
+                            id="aiRegistryDeedNumber" value=""></label>
+                    <label><span data-i18n="registryDate">Registry Date</span><input id="aiRegistryDate"
+                            value=""></label>
+                    <label><span data-i18n="registrationOffice">Registration Office</span><input
+                            id="aiRegistrationOffice" value=""></label>
+                    <label><span data-i18n="boundaryEast">East Boundary</span><input id="aiBoundaryEast"
+                            value=""></label>
+                    <label><span data-i18n="boundaryWest">West Boundary</span><input id="aiBoundaryWest"
+                            value=""></label>
+                    <label><span data-i18n="boundaryNorth">North Boundary</span><input id="aiBoundaryNorth"
+                            value=""></label>
+                    <label><span data-i18n="boundarySouth">South Boundary</span><input id="aiBoundarySouth"
+                            value=""></label>
+
+                </div>
+
+
+                <div class="action-row">
+
+                    <button class="secondary-btn" id="saveDraft" type="button" data-i18n="saveDraft">
+
+                        Save Draft
+
+                    </button>
+
+
+                    <button class="primary-btn" id="submitRecord" type="button" data-i18n="submitVerification">
+
+                        Submit for Verification
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+     RECORDS
+===================================================== -->
+
+        <section id="records" class="page">
+
+            <div class="page-heading">
+
+                <div>
+
+                    <small data-i18n="digitalRepository">DIGITAL REPOSITORY</small>
+
+                    <h2 data-i18n="landRecords">
+                        Land Records
+                    </h2>
+
+                    <p data-i18n="searchRecords">
+                        Search digitized land records.
+                    </p>
+
+                </div>
+
+
+                <button class="primary-btn" data-page="digitize">
+
+                    + <span data-i18n="addRecord">
+                        Add Record
+                    </span>
+
+                </button>
+
+            </div>
+
+
+            <div class="toolbar">
+
+                <input id="recordSearch" data-i18n-placeholder="recordSearchPlaceholder"
+                    placeholder="Search owner, khesara, village or record ID...">
+
+
+                <select id="statusFilter">
+
+                    <option data-i18n="allStatus">
+                        All Status
+                    </option>
+
+                    <option data-i18n="verified">
+                        Verified
+                    </option>
+
+                    <option data-i18n="pending">
+                        Pending
+                    </option>
+
+                    <option data-i18n="flagged">
+                        Flagged
+                    </option>
+
+                    <option value="Rejected">
+                        Rejected
+                    </option>
+
+                    <option value="Draft">
+                        Draft
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="table-card">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th data-i18n="recordId">Record ID</th>
+                            <th data-i18n="landowner">Landowner</th>
+                            <th data-i18n="khasra">Khesara</th>
+                            <th data-i18n="area">Area</th>
+                            <th data-i18n="location">Location</th>
+                            <th data-i18n="status">Status</th>
+                            <th data-i18n="confidence">Confidence</th>
+                            <th data-i18n="action">Action</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="recordsTable">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+     GIS
+===================================================== -->
+
+        <section id="gis" class="page">
+
+            <div class="page-heading">
+
+                <div>
+
+                    <small>
+                        GEOSPATIAL INTELLIGENCE
+                    </small>
+
+                    <h2 data-i18n="gisTitle">
+                        India Land Parcel GIS
+                    </h2>
+
+                    <p data-i18n="gisDesc">
+                        Search any Indian state, district,
+                        city or village.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="map-card">
+
+                <div class="map-search advanced-gis-search">
+                    <input id="gisQuery" data-i18n-placeholder="gisSearchPlaceholder"
+                        placeholder="Search Record ID, owner, village or Khesara">
+                    <select id="gisState">
+                        <option value="" data-i18n="selectState">Select State / UT</option>
+                    </select>
+                    <select id="gisDistrict" disabled>
+                        <option value="" data-i18n="selectDistrict">Select District</option>
+                    </select>
+                    <input id="gisVillage" data-i18n-placeholder="villageMouzaPlaceholder"
+                        placeholder="Village / Mouza">
+                    <input id="gisKhesara" data-i18n-placeholder="khesaraSurveyPlaceholder"
+                        placeholder="Khesara / Survey No.">
+                    <button id="searchMap" type="button" title="Search parcel"><i
+                            class="fa-solid fa-magnifying-glass"></i> <span data-i18n="search">Search</span></button>
+                    <button id="resetMap" type="button" title="Reset map">↻ India</button>
+                    <button id="locateUser" type="button" title="Use current location"><i
+                            class="fa-solid fa-location-crosshairs"></i></button>
+                    <button id="zoomIn" type="button">+</button>
+                    <button id="zoomOut" type="button">−</button>
+                </div>
+
+
+                <div id="landMap" class="land-map">
+                </div>
+
+
+                <div id="gisResult" class="gis-result" hidden></div>
+
+                <div class="map-info">
+
+                    <span>
+                        🟢 Verified
+                    </span>
+
+                    <span>
+                        🟠 Pending
+                    </span>
+
+                    <span>
+                        🔴 Alert
+                    </span>
+
+                    <b id="selectedLocation">
+                        India — National View
+                    </b>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+     VERIFICATION
+===================================================== -->
+
+        <section id="verification" class="page">
+
+            <div class="page-heading">
+
+                <div>
+
+                    <small>
+                        HUMAN-IN-THE-LOOP
+                    </small>
+
+                    <h2 data-i18n="verificationTitle">
+                        Verification Queue
+                    </h2>
+
+                    <p data-i18n="verificationDesc">
+                        Officer review for uncertain records.
+                    </p>
+
+                </div>
+
+
+                <div class="queue">
+
+                    <b id="queueLarge">
+                        37
+                    </b>
+
+                    <span data-i18n="pending">
+                        Pending
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="verification-grid">
+
+                <div class="review-card">
+
+                    <span class="warning-badge">
+                        Database Queue
+                    </span>
+
+                    <h3>
+                        Pending User Records
+                    </h3>
+
+                    <div class="low-confidence">
+
+                        <strong id="verificationQueueCount">0</strong>
+
+                        <small>
+                            records awaiting human verification
+                        </small>
+
+                    </div>
+
+                    <p>
+                        Verification queue me wahi records aayenge
+                        jo actual user form se database me submit honge.
+                    </p>
+
+                    <button class="primary-btn full" type="button" data-page="records">
+
+                        Open Verification Queue
+
+                    </button>
+
+                </div>
+
+
+                <div class="review-card">
+
+                    <span class="danger-badge">
+                        Database Driven
+                    </span>
+
+                    <h3>
+                        No Demo Applicant
+                    </h3>
+
+                    <div class="uncertain">
+
+                        <b>
+                            Live database data
+                        </b>
+
+                        <span>
+                            User details aur uploaded documents
+                            database se load honge.
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+     VALIDATION
+===================================================== -->
+
+        <section id="validation" class="page">
+            <div class="page-heading">
+                <div><small>DATA QUALITY ENGINE</small>
+                    <h2 data-i18n="validationTitle">Validation Center</h2>
+                    <p data-i18n="validationDesc">Automated business rules, duplicate detection and cross-record checks.
+                    </p>
+                </div>
+            </div>
+            <div class="validation-cards">
+                <div><span>✓</span><strong id="validationPassed">0</strong><small>Passed validations</small></div>
+                <div><span>!</span><strong id="validationReview">0</strong><small>Pending review</small></div>
+                <div><span>⚠</span><strong id="validationDuplicates">0</strong><small>Duplicate alerts</small></div>
+            </div>
+            <div class="rules-card" id="validationResults">
+                <h3>Live Validation Results</h3>
+                <div class="rule"><span>i</span>
+                    <div><b>Loading...</b><small>Running checks against current records.</small></div>
+                    <strong>WAIT</strong>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- =====================================================
+     AUDIT
+===================================================== -->
+
+        <section id="audit" class="page">
+            <div class="page-heading">
+                <div><small>IMMUTABLE ACTIVITY LOG</small>
+                    <h2 data-i18n="auditTitle">Audit Trail</h2>
+                    <p data-i18n="auditDesc">Track every important record operation.</p>
+                </div>
+            </div>
+            <div class="audit-card" id="auditLogList">
+                <div class="audit-row"><span>i</span>
+                    <div><b>Loading audit trail...</b><small>Authenticated activity will appear here.</small></div>
+                    <strong>—</strong>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- =====================================================
+     ANALYTICS
+===================================================== -->
+
+        <section id="analytics" class="page">
+            <div class="page-heading">
+                <div><small>SYSTEM INTELLIGENCE</small>
+                    <h2 data-i18n="analyticsTitle">Analytics Dashboard</h2>
+                    <p data-i18n="analyticsDesc">Monitor digitization and AI performance.</p>
+                </div>
+            </div>
+            <div class="analytics-live" id="analyticsLive">
+                <div class="chart-card">
+                    <h3>Loading analytics...</h3>
+                    <p>Calculating current record and verification metrics.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+
+    <!-- =====================================================
+     FOOTER
+===================================================== -->
+
+    <footer>
+
+        <div>
+
+            <b>
+                BhuRakshak
+            </b>
+
+            <span>
+                Intelligent Land Record Digitization & Validation
+            </span>
+
+        </div>
+
+
+        <div>
+            Smart India Hackathon 2026 • Prototype
+        </div>
+
+    </footer>
+
+
+    <!-- =====================================================
+     LOGIN / SIGNUP MODAL
+===================================================== -->
+
+    <div class="modal-overlay" id="loginModal">
+
+        <div class="modal auth-modal">
+
+            <button class="close" type="button" data-close="loginModal">
+
+                ×
+
+            </button>
+
+
+            <div class="modal-icon">
+                🔐
+            </div>
+
+
+            <small id="loginType">
+                OFFICER ACCESS
+            </small>
+
+
+            <h2 id="loginTitle">
+                Officer Login
+            </h2>
+
+
+            <p id="loginDescription">
+                Sign in to review and verify land records.
+            </p>
+
+
+            <!-- LOGIN -->
+            <form id="loginForm">
+
+                <label>
+                    <span id="loginIdentifierLabel">Phone / Email / User ID</span>
+                    <input id="loginUser" required autocomplete="username"
+                        placeholder="Enter phone number, email or User ID">
+                </label>
+
+                <div id="loginPasswordGroup" style="display:none">
+                    <label>
+                        <span>Password</span>
+                        <div class="password">
+                            <input id="loginPassword" type="password" autocomplete="current-password"
+                                placeholder="Enter Password">
+                            <button id="togglePassword" type="button" aria-label="Show password">👁</button>
+                        </div>
+                    </label>
+                </div>
+
+
+                <div id="loginOtpGroup" class="otp-channel-card" hidden><label><span>Login OTP</span><input
+                            id="loginOtp" inputmode="numeric" maxlength="6" pattern="[0-9]{6}"
+                            autocomplete="one-time-code" placeholder="Enter 6-digit OTP"></label><small
+                        id="loginOtpStatus" class="otp-status"></small>
+                    <div id="loginDemoOtp" class="demo-otp" hidden></div>
+                </div>
+
+                <div id="captchaGroup" class="captcha-group">
+                    <div class="captcha-head">
+                        <span>CAPTCHA</span>
+                        <button id="refreshCaptcha" type="button" class="captcha-refresh">↻ New CAPTCHA</button>
+                    </div>
+                    <div class="captcha-challenge"><strong id="captchaQuestion">Loading…</strong></div>
+                    <input id="captchaAnswer" required inputmode="numeric" autocomplete="off"
+                        placeholder="Enter CAPTCHA answer">
+                    <input id="captchaId" type="hidden">
+                    <small id="captchaStatus" class="field-help">Solve the CAPTCHA before signing in.</small>
+                </div>
+
+
+                <button class="primary-btn full" type="submit">
+
+                    <span data-i18n="secureLogin">Secure Login →</span>
+
+                </button>
+
+            </form>
+
+            <div id="officerCredentialHint" class="field-help"
+                style="display:none;margin-top:10px;padding:9px 10px;border:1px solid #d8dee6;border-radius:8px;background:#f8fafc">
+                Officer ID: <b>DHEE14</b> &nbsp;|&nbsp; Password: <b>New@1234</b></div>
+
+            <button id="forgotPasswordLink" type="button" class="auth-link" data-i18n="forgotPassword">Forgot
+                password?</button>
+
+            <div class="auth-switch">
+
+                <span>
+                    Don't have an account?
+                </span>
+
+                <button id="showSignup" type="button">
+
+                    Sign Up
+
+                </button>
+
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+     FORGOT PASSWORD MODAL
+===================================================== -->
+
+    <div class="modal-overlay" id="forgotPasswordModal">
+        <div class="modal auth-modal">
+            <button class="close" type="button" data-close="forgotPasswordModal">×</button>
+            <div class="modal-icon">🔑</div>
+            <small data-i18n="passwordRecovery">PASSWORD RECOVERY</small>
+            <h2 data-i18n="forgotPasswordTitle">Forgot Password</h2>
+            <p data-i18n="forgotPasswordDesc">Reset your administrator password using your registered phone number or
+                email.</p>
+            <form id="forgotPasswordForm">
+                <label><span data-i18n="loginIdentifier">Phone / Email / User ID</span><input id="forgotIdentifier"
+                        required autocomplete="username" placeholder="Enter phone, email or User ID"></label>
+                <button id="requestResetOtp" class="secondary-btn full" type="button" data-i18n="sendResetOtp">Send
+                    Reset OTP</button>
+                <div id="resetOtpArea" hidden>
+                    <label><span data-i18n="resetOtp">Reset OTP</span><input id="resetOtp" inputmode="numeric"
+                            maxlength="6" autocomplete="one-time-code" placeholder="6-digit OTP"></label>
+                    <div id="resetOtpDemo" class="demo-credentials" hidden></div>
+                    <label><span data-i18n="newPassword">New Password</span><input id="resetNewPassword" type="password"
+                            minlength="6" required autocomplete="new-password"
+                            placeholder="At least 6 characters"></label>
+                    <label><span data-i18n="confirmPassword">Confirm Password</span><input id="resetConfirmPassword"
+                            type="password" minlength="6" required autocomplete="new-password"
+                            placeholder="Re-enter password"></label>
+                    <button class="primary-btn full" type="submit" data-i18n="resetPassword">Reset Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- =====================================================
+     SIGNUP MODAL
+===================================================== -->
+
+    <div class="modal-overlay" id="signupModal">
+
+        <div class="modal">
+
+            <button class="close" type="button" data-close="signupModal">
+
+                ×
+
+            </button>
+
+
+            <div class="modal-icon">
+                📝
+            </div>
+
+
+            <small id="signupType">
+                ACCOUNT REGISTRATION
+            </small>
+
+
+            <h2>
+                Create Account
+            </h2>
+
+
+            <p>
+                Register for BhuRakshak access.
+            </p>
+
+
+            <form id="signupForm">
+
+                <label>
+                    <span data-i18n="fullName">Full Name</span>
+                    <input id="signupName" pattern="[^0-9]*" required placeholder="Enter full name">
+                </label>
+
+                <label>
+                    User ID
+                    <input id="signupUser" required placeholder="Create User ID" autocomplete="username">
+                </label>
+
+                <div class="otp-channel-card">
+                    <label>
+                        <span data-i18n="phoneNumber">Phone Number</span>
+                        <input id="signupPhone" required inputmode="numeric" maxlength="10" pattern="[0-9]{10}"
+                            placeholder="10-digit mobile number" autocomplete="tel">
+                    </label>
+                    <div class="otp-row">
+                        <button id="sendPhoneOtp" class="secondary-btn" type="button" data-i18n="sendPhoneOtp">Send
+                            Phone OTP</button>
+                        <input id="phoneOtp" inputmode="numeric" maxlength="6" pattern="[0-9]{6}"
+                            placeholder="6-digit OTP" autocomplete="one-time-code" disabled>
+                        <button id="verifyPhoneOtp" class="outline-btn" type="button" data-i18n="verifyOtp"
+                            disabled>Verify</button>
+                    </div>
+                    <small id="phoneOtpStatus" class="otp-status"></small>
+                    <div id="phoneDemoOtp" class="demo-otp" hidden></div>
+                </div>
+
+                <div class="otp-channel-card">
+                    <label>
+                        <span data-i18n="email">Email</span>
+                        <input id="signupEmail" type="email" required placeholder="Enter email address"
+                            autocomplete="email">
+                    </label>
+                    <div class="otp-row">
+                        <button id="sendEmailOtp" class="secondary-btn" type="button" data-i18n="sendEmailOtp">Send
+                            Email OTP</button>
+                        <input id="emailOtp" inputmode="numeric" maxlength="6" pattern="[0-9]{6}"
+                            placeholder="6-digit OTP" autocomplete="one-time-code" disabled>
+                        <button id="verifyEmailOtp" class="outline-btn" type="button" data-i18n="verifyOtp"
+                            disabled>Verify</button>
+                    </div>
+                    <small id="emailOtpStatus" class="otp-status"></small>
+                    <div id="emailDemoOtp" class="demo-otp" hidden></div>
+                </div>
+
+                <label>
+                    Password
+                    <input id="signupPassword" type="password" required minlength="6" placeholder="Create password"
+                        autocomplete="new-password">
+                </label>
+
+                <label>
+                    Confirm Password
+                    <input id="signupConfirm" type="password" required minlength="6" placeholder="Confirm password"
+                        autocomplete="new-password">
+                </label>
+
+                <button class="primary-btn full" type="submit">
+                    <span data-i18n="createAccount">Create Account</span> →
+                </button>
+
+            </form>
+
+
+            <div class="auth-switch">
+
+                <span>
+                    Already have an account?
+                </span>
+
+                <button id="showLogin" type="button">
+
+                    Login
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+     VERIFICATION MODAL
+===================================================== -->
+
+    <div class="modal-overlay" id="verificationModal">
+
+        <div class="modal large">
+
+            <button class="close" type="button" data-close="verificationModal">
+
+                ×
+
+            </button>
+
+            <small>
+                OFFICER REVIEW
+            </small>
+
+            <h2 id="verificationTitle">
+                Database Record
+            </h2>
+
+            <p>
+                Actual user record aur uploaded documents
+                database se yahan load honge.
+            </p>
+
+            <div id="verificationBody" class="verify-fields">
+            </div>
+
+            <div class="modal-actions">
+
+                <button class="secondary-btn" type="button" data-close="verificationModal">
+
+                    Close
+
+                </button>
+
+                <button class="primary-btn" id="approveRecord" type="button">
+
+                    ✓ Approve Record
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+     SUPPORT MODAL
+===================================================== -->
+
+    <div class="modal-overlay" id="supportModal">
+
+        <div class="modal support-modal">
+
+            <button class="close" type="button" data-close="supportModal">
+
+                ×
+
+            </button>
+
+
+            <div class="support-icon">
+                🎧
+            </div>
+
+
+            <small>
+                CUSTOMER SUPPORT
+            </small>
+
+
+            <h2>
+                How can we help?
+            </h2>
+
+
+            <p>
+                Raise a query related to land records,
+                digitization, verification or technical assistance.
+            </p>
+
+
+            <form id="supportForm">
+
+                <label>
+
+                    Name
+
+                    <input required placeholder="Enter your name">
+
+                </label>
+
+
+                <label>
+
+                    Mobile / Email
+
+                    <input required placeholder="Enter contact details">
+
+                </label>
+
+
+                <label>
+
+                    Query
+
+                    <textarea required placeholder="Describe your issue..."></textarea>
+
+                </label>
+
+
+                <button class="primary-btn full" type="submit">
+
+                    Submit Support Query
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================     
+     TOAST
+===================================================== -->
+
+    <!-- =====================================================
+     FORM VALIDATION POPUP
+===================================================== -->
+    <div class="modal-overlay" id="formValidationModal" aria-hidden="true">
+        <div class="modal validation-popup" role="alertdialog" aria-modal="true" aria-labelledby="validationPopupTitle">
+            <button class="close" type="button" data-close="formValidationModal" aria-label="Close">×</button>
+            <div class="modal-icon validation-popup-icon">⚠️</div>
+            <h2 id="validationPopupTitle" data-i18n="validationPopupTitle">Required details missing</h2>
+            <p id="validationPopupMessage" data-i18n="validationPopupMessage">Please fill all required details before
+                submitting.</p>
+            <div id="validationPopupList" class="validation-popup-list"></div>
+            <div class="modal-actions">
+                <button class="primary-btn" type="button" data-close="formValidationModal">
+                    <span data-i18n="okay">OK</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true">
+    </div>
+
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+    </script>
+
+    <!-- Local state/district selector data and helpers (must load before script.js) -->
+    <script src="locations.js"></script>
+
+    <!-- Browser-side PDF text extraction fallback -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+    <script src="script.js">
+    </script>
+
+</body>
+
+</html>
