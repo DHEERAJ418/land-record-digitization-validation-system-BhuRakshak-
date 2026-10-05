@@ -1,135 +1,171 @@
-BhuRakshak — Intelligent Land Record Digitization & Validation System
-====================================================================
+# BhuRakshak — Intelligent Land Record Digitization & Validation System
 
-DATABASE
---------
-- SQLite has been completely removed from the live application.
-- The server now uses MongoDB for live persistence.
-- Default local connection: mongodb://127.0.0.1:27017
-- Default database: bhurakshak
-- For MongoDB Atlas or another server, set MONGODB_URI and MONGODB_DB before starting.
+BhuRakshak is a web-based land record digitization and validation platform designed to provide a structured workflow for land-record submission, document processing, human verification, digital document generation, QR-based verification, and GIS-assisted record access.
 
-Example (Windows PowerShell):
-  $env:MONGODB_URI="mongodb://127.0.0.1:27017"
-  $env:MONGODB_DB="bhurakshak"
-  npm install
-  npm start
+The system provides dedicated workflows for users, officers, and administrators while using MongoDB as the primary persistence layer.
 
-RESET / EMPTY DATABASE
-----------------------
-The old SQLite database file has been removed from this delivery package.
-To completely clear the live MongoDB database before adding fresh records:
-  npm run reset-db
+> **Project Status:** Working Prototype / Hackathon Demonstration  
+> This project is intended for educational, technical, and demonstration purposes and does not represent an official government land-record service.
 
-This clears only these BhuRakshak collections:
-  land_records
-  documents
-  admin_users
-  audit_logs
+---
 
-There is also an optional one-time startup reset switch:
-  RESET_MONGODB_ON_START=true
-Do not leave this enabled in a persistent deployment because it clears data every time the server starts.
+## Overview
 
-VERIFICATION + DIGITAL DOCUMENT
--------------------------------
-- Records submitted for verification are stored as Pending.
-- Only an authorized Officer can mark a record Verified.
-- The digital verification document endpoint refuses to generate a document unless the record status is Verified.
-- The generated document is populated from the verified user/land record stored in MongoDB.
-- The document prominently displays the Record ID.
-- The document includes the India national emblem, BhuRakshak logo and the relevant State Government branding.
-- The cadastral map/naksha has been completely removed from the digital document.
-- The document remains a prototype/reference document and is clearly marked as such.
+Traditional land records may exist in different physical and digital formats, making their organization, verification, and accessibility difficult.
 
-PARENT DETAILS
---------------
-- Father and Mother are now separate form sections.
-- Father's Aadhaar number is a dedicated 12-digit field.
-- Father's Aadhaar document upload is required when submitting a record for verification.
-- Only the last four Aadhaar digits are retained in the land record; the full Aadhaar number is not stored.
+BhuRakshak demonstrates a centralized workflow where:
 
-RECORD VIEW + GIS
------------------
-- A user can search verified land records from GIS by Record ID, owner name, state, district, village, circle, Khesara, survey, plot, Khata or Khatiyan.
-- Verified record viewing does not require a separate land-record password.
-- Staff dashboards remain protected by officer/administrator authentication.
+1. A user registers and verifies their account.
+2. The user submits land and applicant information.
+3. Supporting documents can be uploaded and processed.
+4. Submitted records enter the verification workflow.
+5. An authorized officer reviews the record and supporting information.
+6. The officer can verify or reject the record.
+7. A verified record can generate a digital land-record document.
+8. The generated document includes QR-based verification.
+9. Verified records can be accessed through the available GIS/record-search workflow.
 
-DIGITAL DOCUMENT QR / BRANDING
-------------------------------
-- The verified digital document contains the India Emblem, BhuRakshak logo, relevant State Government branding and a generated QR code.
-- The QR payload is a direct absolute verification URL containing the verified Record ID.
-- Scanning the QR code opens `/verify?record_id=...` and displays the verified document details in a mobile-friendly page.
-- No cadastral map/naksha is embedded in the generated digital document.
-- The document is still clearly marked as a prototype/reference document.
+---
 
-AUTHENTICATION
---------------
-- Administrator login requires password + CAPTCHA + a second-factor OTP sent to the registered mobile number.
-- After successful signup, the signup modal closes and the user is redirected immediately to the Login screen.
-- Signup continues to require both phone OTP and email OTP verification.
+# Key Features
 
-RUNNING
--------
-1. Install Node.js 18+.
-2. Install and run MongoDB locally, or configure MONGODB_URI for MongoDB Atlas.
-3. From this directory run:
-     npm install
-     npm start
-4. Open http://localhost:3000
+## User Module
 
-No SQLite native module is required anymore. This removes the previous Windows-specific sqlite3 runtime limitation.
+- User registration
+- User login
+- Phone and email verification
+- Land record submission
+- Applicant information
+- Parent information
+- Property and land information
+- Registration information
+- Supporting document upload
+- Record status tracking
+- Verified record access
 
-WINDOWS / MONGODB TROUBLESHOOTING
----------------------------------
-The error `MongoServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017` does NOT mean the Node code cannot use MongoDB. It means no MongoDB server is listening on the configured address/port.
+## Document Processing
 
-Option A - local MongoDB Community Server:
-1. Check the Windows service:
-   Get-Service MongoDB
-2. If it exists but is stopped:
-   Start-Service MongoDB
-3. Verify the server:
-   mongosh "mongodb://127.0.0.1:27017"
-4. From this project folder:
-   npm install
-   npm start
+- Supporting document upload
+- OCR-assisted text extraction
+- English document processing
+- Hindi OCR support where configured
+- Extracted information can be reviewed during the verification process
+- Automatic extraction failures can fall back to manual review
 
-Option B - MongoDB Atlas:
-1. Create a MongoDB Atlas cluster and database user.
-2. Set the connection string before starting:
-   $env:MONGODB_URI="mongodb+srv://USERNAME:PASSWORD@YOURCLUSTER.mongodb.net/?retryWrites=true&w=majority"
-   $env:MONGODB_DB="bhurakshak"
-   npm start
+## Officer Verification
 
-The project also supports a local `.env` file. Copy `.env.example` to `.env` and change MONGODB_URI when using Atlas. Environment variables already set in PowerShell take precedence.
+Authorized officers can:
 
-If MongoDB is temporarily offline, `npm start` no longer crashes with an unhandled MongoDB promise rejection. The website starts, reports `MONGODB_UNAVAILABLE` for database-backed API calls, and automatically retries the connection when the database becomes reachable.
+- Access the officer dashboard
+- View submitted land records
+- Review applicant information
+- Review property information
+- Review uploaded supporting documents
+- Check extracted information
+- Verify records
+- Reject records
+- Open generated digital documents for verified records
 
-To clear all application data after MongoDB is running:
-   npm run reset-db
-This clears: land_records, documents, admin_users and audit_logs, including all administrator login records.
+The verification workflow is based on the submitted record and supporting evidence rather than a separate record-view password.
 
---- Debugging / Fixes (2026-10-04) ---
-- Restored Officer-only Verify and Reject controls in the human-verification modal.
-- Fixed the administrator dashboard null `dataset` crash when opening a record.
-- Added live dashboard refresh for record/stat counters.
-- Added Applicant Aadhaar upload alongside the Father's Aadhaar proof.
-- Existing verified records are normalized to High verification confidence on staff dashboard reads; newly verified records are saved as High.
-- Generated digital documents now omit empty fields, the supporting-documents section, and the previous verification notice.
-- Added administrator support for resetting the record-view password for legacy records.
-- Improved the public GIS record-view error when a legacy verified record has no password configured.
+## Administrator Module
 
-USER AADHAAR
-------------
-- User Information includes a required 12-digit Applicant Aadhaar Number field for submitted records.
-- For privacy, only the last four digits are retained in MongoDB (`id_last4`); the complete Aadhaar number is not stored.
-- Father's Aadhaar follows the same last-four-digit retention rule.
+The administrator dashboard provides system-level monitoring capabilities including:
 
-CURRENT DEBUG STATUS
---------------------
-- Record View Password has been removed from the land-record workflow.
-- Verification no longer fails because a record password is missing.
-- Dashboard Total / Pending / Verified / Documents counters are backed by MongoDB and refreshed automatically.
-- MongoDB query support was extended for the admin login OTP flow and QR verification route.
-- `npm run reset-db` clears the BhuRakshak MongoDB collections.
+- Total records
+- Pending records
+- Verified records
+- Generated/uploaded document statistics
+- Record management
+- Administrative authentication
+- Administrative verification workflows
+
+Administrator authentication includes additional verification mechanisms for improved account security.
+
+## Digital Document Generation
+
+A digital record document is generated from the verified MongoDB record.
+
+The generated document can contain:
+
+- Record ID
+- Applicant information
+- Parent information
+- Land/property information
+- Registration information
+- Relevant government/state branding assets where available
+- QR-based verification information
+- Prototype/reference notice
+
+Empty or unavailable fields are omitted where applicable.
+
+Cadastral maps/naksha and unnecessary supporting-document listings are not included in the generated digital document.
+
+## QR Verification
+
+Verified digital documents include a QR code.
+
+Depending on the deployment configuration:
+
+- A public verification URL can be encoded in the QR code.
+- In local/demo configuration, verified record information can be encoded without exposing a localhost address.
+
+The verification workflow allows a scanned QR code to open the corresponding verified record information.
+
+## GIS / Record Search
+
+The GIS/record-search workflow supports searching available verified records using record and location information such as:
+
+- Record ID
+- State
+- District
+- Village
+- Khesara
+- Survey information
+- Khata
+- Khatiyan
+
+Only appropriate verified-record information is exposed through the public verification workflow.
+
+---
+
+# Application Workflow
+
+```text
+                    BhuRakshak
+                        │
+                        ▼
+                User Registration
+                        │
+                        ▼
+                 Account Verification
+                        │
+                        ▼
+                    User Login
+                        │
+                        ▼
+              Land Record Submission
+                        │
+                        ▼
+             Supporting Documents
+                        │
+                        ▼
+              OCR / Data Processing
+                        │
+                        ▼
+               Pending Verification
+                        │
+                        ▼
+                 Officer Review
+                   /         \
+                  /           \
+             Reject           Verify
+               │                │
+               ▼                ▼
+          Rejected Record   Digital Document
+                                │
+                                ▼
+                          QR Verification
+                                │
+                                ▼
+                         GIS / Record Access
