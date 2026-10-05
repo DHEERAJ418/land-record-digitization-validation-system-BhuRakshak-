@@ -3,6 +3,8 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const { Readable } = require("stream");
+const { put, get: blobGet } = require("@vercel/blob");
 const crypto = require("crypto");
 const QRCode = require("./vendor/qrcode/index");
 const QRErrorCorrectLevel = require("./vendor/qrcode/QRErrorCorrectLevel");
@@ -47,25 +49,13 @@ const PUBLIC_DIR =
 const UPLOAD_DIR =
     path.join(ROOT, "uploads");
 
+// Vercel Functions run from a read-only deployment filesystem. Uploaded documents
+// therefore use memoryStorage and Vercel Blob in production. Local development
+// continues to use the existing ./uploads directory.
+const IS_VERCEL = Boolean(process.env.VERCEL);
 
-
-/*
-=====================================================
-DIRECTORIES
-=====================================================
-*/
-
-if (
-    !fs.existsSync(UPLOAD_DIR)
-) {
-
-    fs.mkdirSync(
-        UPLOAD_DIR,
-        {
-            recursive: true
-        }
-    );
-
+if (!IS_VERCEL && !fs.existsSync(UPLOAD_DIR)) {
+    fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 }
 
 
@@ -296,144 +286,63 @@ MULTER STORAGE
 =====================================================
 */
 
-const storage =
-    multer.diskStorage({
-
-        destination:
-            function (
-                req,
-                file,
-                cb
-            ) {
-
-                cb(
-                    null,
-                    UPLOAD_DIR
-                );
-
-            },
-
-
-        filename:
-            function (
-                req,
-                file,
-                cb
-            ) {
-
-                const extension =
-                    path.extname(
-                        file.originalname
-                    ).toLowerCase();
-
-
-                const filename =
-                    Date.now() +
-                    "-" +
-                    Math.random()
-                        .toString(36)
-                        .substring(
-                            2,
-                            10
-                        ) +
-                    extension;
-
-
-                cb(
-                    null,
-                    filename
-                );
-
-            }
-
-    });
-
-
-/*
-=====================================================
-NORMAL DOCUMENT UPLOAD
-=====================================================
-*/
-
-const upload =
-    multer({
-
-        storage,
-
-        limits: {
-
-            fileSize:
-                20 *
-                1024 *
-                1024
-
+const storage = IS_VERCEL
+    ? multer.memoryStorage()
+    : multer.diskStorage({
+        destination: function (req, file, cb) {
+            cb(null, UPLOAD_DIR);
         },
-
-
-        fileFilter:
-            function (
-                req,
-                file,
-                cb
-            ) {
-
-                const allowed = [
-
-                    ".pdf",
-                    ".jpg",
-                    ".jpeg",
-                    ".png"
-
-                ];
-
-
-                const extension =
-                    path.extname(
-                        file.originalname
-                    ).toLowerCase();
-
-
-                if (
-                    !allowed.includes(
-                        extension
-                    )
-                ) {
-
-                    return cb(
-                        new Error(
-                            "Only PDF, JPG, JPEG and PNG files are allowed."
-                        )
-                    );
-
-                }
-
-
-                cb(
-                    null,
-                    true
-                );
-
-            }
-
+        filename: function (req, file, cb) {
+            const extension = path.extname(file.originalname).toLowerCase();
+            const filename = Date.now() + "-" + Math.random().toString(36).substring(2, 10) + extension;
+            cb(null, filename);
+        }
     });
 
+const upload = multer({
+    storage,
+    limits: { fileSize: 20 * 1024 * 1024 },
+    fileFilter: function (req, file, cb) {
+        const allowed = [".pdf", ".jpg", ".jpeg", ".png"];
+        const extension = path.extname(file.originalname).toLowerCase();
+        if (!allowed.includes(extension)) {
+            return cb(new Error("Only PDF, JPG, JPEG and PNG files are allowed."));
+        }
+        cb(null, true);
+    }
+});
 
-const uploadMiddleware =
-    upload.fields(
+const uploadMiddleware = upload.fields(
+    documentTypes.map(item => ({ name: item.field, maxCount: 1 }))
+);
 
-        documentTypes.map(
-            item => ({
+async function storeUploadedFile(file, recordId, fieldName) {
+    if (IS_VERCEL) {
+        if (!file?.buffer) throw new Error("Uploaded file is missing from memory.");
+        const extension = path.extname(file.originalname || "").toLowerCase();
+        const safeName = String(file.originalname || "document")
+            .replace(/[^a-zA-Z0-9._-]/g, "_")
+            .slice(-120);
+        const pathname = `bhurakshak/${recordId}/${fieldName}-${Date.now()}-${safeName}`;
+        const blob = await put(pathname, file.buffer, {
+            access: "private",
+            contentType: file.mimetype || "application/octet-stream",
+            addRandomSuffix: true
+        });
+        return {
+            storedName: blob.pathname,
+            size: file.size,
+            url: blob.url
+        };
+    }
 
-                name:
-                    item.field,
+    return {
+        storedName: file.filename,
+        size: file.size,
+        url: `/uploads/${file.filename}`
+    };
+}
 
-                maxCount:
-                    1
-
-            })
-        )
-
-    );
 
 
 /*
@@ -506,8 +415,8 @@ const otpChallenges = new Map();
 const captchaChallenges = new Map();
 const IS_PRODUCTION = String(process.env.NODE_ENV || "development").toLowerCase() === "production";
 const OFFICER_USER_ID = process.env.OFFICER_USER_ID || (IS_PRODUCTION ? "" : "DHEE14");
-const OFFICER_PASSWORD = process.env.OFFICER_PASSWORD || "New@1234";
-if (!IS_PRODUCTION) console.warn("DEMO OFFICER LOGIN (local only): ID=DHEE14 / password=New@1234");
+const OFFICER_PASSWORD = process.env.OFFICER_PASSWORD || (IS_PRODUCTION ? "" : "New@1234");
+if (!IS_PRODUCTION) console.warn("DEMO OFFICER LOGIN (local only): ID=DHEE14  PASSWORD=New@1234");
 
 function normalizeContact(value) {
     return String(value || "").trim();
@@ -549,7 +458,7 @@ function verifyPassword(password, stored) {
 function createStaffSession(role, userId, displayName) {
     const token = crypto.randomBytes(32).toString("hex");
     staffSessions.set(token, {
-        role, userId, displayName, createdAt: Date.now(), expiresAt: Date.now() + 24 * 60 * 60 * 1000
+        role, userId, displayName, createdAt: Date.now(), expiresAt: Date.now() + 2 * 60 * 60 * 1000
     });
     return token;
 }
@@ -674,12 +583,12 @@ app.post("/api/auth/officer/login", (req, res) => {
             message: "Incorrect CAPTCHA. Please solve the new CAPTCHA and try again."
         });
     }
-    if (!OFFICER_USER_ID) return res.status(503).json({ success:false, message:"Officer ID is not configured on this server." });
+    if (!OFFICER_USER_ID || !OFFICER_PASSWORD) return res.status(503).json({ success:false, message:"Officer credentials are not configured on this server." });
     if (userId !== OFFICER_USER_ID || password !== OFFICER_PASSWORD) {
         return res.status(401).json({ success: false, message: "Invalid officer ID or password." });
     }
     const token = createStaffSession("officer", OFFICER_USER_ID, "DHEE14 Officer");
-    logAudit(null, "officer", OFFICER_USER_ID, "OFFICER_LOGIN", "Officer session started using Officer ID, password and CAPTCHA");
+    logAudit(null, "officer", OFFICER_USER_ID, "OFFICER_LOGIN", "Demo officer session started");
     return res.json({ success: true, role: "officer", user_id: OFFICER_USER_ID, display_name: "DHEE14 Officer", token });
 });
 
@@ -825,9 +734,10 @@ CREATE LAND RECORD
 */
 
 function validateStoredFile(file) {
-    if (!file?.path) throw new Error("Uploaded file is missing.");
+    if (!file || (!file.path && !file.buffer)) throw new Error("Uploaded file is missing.");
     const ext = path.extname(file.originalname || "").toLowerCase();
-    const header = fs.readFileSync(file.path).subarray(0, 12);
+    const data = file.buffer || fs.readFileSync(file.path);
+    const header = data.subarray(0, 12);
     const valid = (ext === ".pdf" && header.subarray(0, 4).toString() === "%PDF") ||
         ([".jpg", ".jpeg"].includes(ext) && header[0] === 0xff && header[1] === 0xd8 && header[2] === 0xff) ||
         (ext === ".png" && header.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10])));
@@ -962,65 +872,29 @@ app.post(
                 }
 
 
-                await run(
+                const storedFile = await storeUploadedFile(file, recordId, documentType.field);
 
+                const documentResult = await run(
                     `
-
                     INSERT INTO documents (
-
-                        record_id,
-
-                        document_type,
-
-                        original_name,
-
-                        stored_name,
-
-                        mime_type,
-
-                        size
-
+                        record_id, document_type, original_name, stored_name, mime_type, size
                     )
-
-                    VALUES (
-
-                        ?, ?, ?, ?, ?, ?
-
-                    )
-
+                    VALUES (?, ?, ?, ?, ?, ?)
                     `,
-
                     [
-
                         databaseId,
-
                         documentType.type,
-
                         file.originalname,
-
-                        file.filename,
-
+                        storedFile.storedName,
                         file.mimetype,
-
-                        file.size
-
+                        storedFile.size
                     ]
-
                 );
 
-
                 savedDocuments.push({
-
-                    document_type:
-                        documentType.type,
-
-                    original_name:
-                        file.originalname,
-
-                    url:
-                        "/uploads/" +
-                        file.filename
-
+                    document_type: documentType.type,
+                    original_name: file.originalname,
+                    url: `/api/admin/documents/${documentResult.lastID}`
                 });
 
                 await logAudit(databaseId, "user", body.user_id || userId, "DOCUMENT_UPLOADED", `${documentType.type}: ${file.originalname}`);
@@ -1104,34 +978,6 @@ app.post(
 
 /*
 =====================================================
-PUBLIC DASHBOARD STATS
-=====================================================
-*/
-app.get("/api/public/stats", async (req, res) => {
-    try {
-        const records = await all(`SELECT * FROM land_records ORDER BY id DESC`);
-        const total = records.length;
-        const pending = records.filter(r => String(r.status || "") === "Pending").length;
-        const verified = records.filter(r => String(r.status || "") === "Verified").length;
-        const documents = await get(`SELECT COUNT(*) count FROM documents`);
-        const duplicateMap = new Map();
-        for (const record of records) {
-            const parts = [record.state, record.district, record.village, record.khasra_number].map(v => String(v || "").trim().toLowerCase());
-            if (parts.every(Boolean)) {
-                const key = parts.join("|");
-                duplicateMap.set(key, (duplicateMap.get(key) || 0) + 1);
-            }
-        }
-        const duplicates = [...duplicateMap.values()].filter(n => n > 1).reduce((a, n) => a + n, 0);
-        return res.json({success:true,total,pending,verified,documents:Number(documents?.count || 0),duplicates,updated_at:new Date().toISOString()});
-    } catch (error) {
-        console.error("PUBLIC STATS ERROR:", error);
-        return res.status(500).json({success:false,message:"Unable to load dashboard statistics."});
-    }
-});
-
-/*
-=====================================================
 PUBLIC LAND RECORD LIST
 =====================================================
 */
@@ -1177,24 +1023,25 @@ app.get("/api/gis/search", async (req, res) => {
         const state = String(req.query.state || "").trim();
         const district = String(req.query.district || "").trim();
         const village = String(req.query.village || "").trim();
+        const circle = String(req.query.circle || "").trim();
         const khasra = String(req.query.khasra || "").trim();
         const generalQuery = String(req.query.q || "").trim().toLowerCase();
         let recordRows = [];
         if (generalQuery) {
             const records = await all("SELECT * FROM land_records ORDER BY updated_at DESC");
             const tokens = generalQuery.split(/\s+/).filter(Boolean);
-            recordRows = records.filter(r => String(r.status || "") === "Verified").filter(r => {
+            recordRows = records.filter(r => !["Draft","Rejected"].includes(String(r.status || ""))).filter(r => {
                 const haystack = [r.record_id, r.user_name, r.state, r.district, r.village, r.circle, r.khasra_number, r.survey_number, r.plot_number, r.khata_number, r.khatiyan_number]
                     .map(v => String(v || "").toLowerCase()).join(" | ");
                 return tokens.every(token => haystack.includes(token));
             }).slice(0, 10);
         } else {
             if (!state || !district || !village || !khasra) {
-                return res.status(400).json({ success: false, message: "Enter Record ID, or select State, District, Village and Khesara/Survey number." });
+                return res.status(400).json({ success: false, message: "Enter a Record ID/owner/location search, or select State, District, Village and Khesara/Survey number." });
             }
             recordRows = await all(`
             SELECT * FROM land_records
-            WHERE status = 'Verified' 
+            WHERE status IN ('Pending', 'Verified', 'Flagged')
               AND lower(trim(state)) = lower(trim(?))
               AND lower(trim(district)) = lower(trim(?))
               AND (lower(trim(village)) = lower(trim(?)) OR lower(trim(village)) LIKE '%' || lower(trim(?)) || '%')
@@ -1204,16 +1051,19 @@ app.get("/api/gis/search", async (req, res) => {
                  OR lower(trim(plot_number)) = lower(trim(?))
                  OR replace(replace(lower(trim(khasra_number)), '/', ''), '-', '') = replace(replace(lower(trim(?)), '/', ''), '-', '')
               )
+              AND (? = '' OR lower(trim(circle)) = lower(trim(?)) OR lower(trim(circle)) LIKE '%' || lower(trim(?)) || '%')
             ORDER BY
               CASE WHEN lower(trim(village)) = lower(trim(?)) THEN 0 ELSE 1 END,
+              CASE WHEN ? = '' OR lower(trim(circle)) = lower(trim(?)) THEN 0 ELSE 1 END,
               id DESC
             LIMIT 5
-        `, [state, district, village, village, khasra, khasra, khasra, khasra, village]);
+        `, [state, district, village, village, khasra, khasra, khasra, khasra, circle, circle, circle, village, circle, circle]);
         }
         const record = recordRows[0] || null;
         const profile = getStateProfile(record?.state || state);
-        // GIS is public for parcel discovery. Verified records can be opened directly;
-        // no separate land-record password is required.
+        // GIS is intentionally public for parcel discovery, but personally identifying
+        // and detailed land-record fields are protected. The full record is available
+        // only through the authenticated Land Records viewer.
         const safeRecord = record ? {
             id: record.id,
             record_id: record.record_id,
@@ -1459,13 +1309,21 @@ app.get("/api/admin/documents/:id", requireStaffAuth, async (req, res) => {
     try {
         const doc = await get("SELECT * FROM documents WHERE id = ?", [req.params.id]);
         if (!doc) return res.status(404).json({ success: false, message: "Document not found." });
+
+        res.setHeader("Content-Type", doc.mime_type || "application/octet-stream");
+        res.setHeader("Content-Disposition", `attachment; filename="${String(doc.original_name || "document").replace(/[^a-zA-Z0-9._-]/g, "_")}"`);
+
+        if (IS_VERCEL) {
+            const result = await blobGet(doc.stored_name, { access: "private", useCache: false });
+            if (!result?.stream) return res.status(404).json({ success: false, message: "Document file is unavailable." });
+            return Readable.fromWeb(result.stream).pipe(res);
+        }
+
         const safeRoot = path.resolve(UPLOAD_DIR);
         const filePath = path.resolve(UPLOAD_DIR, doc.stored_name);
         if (!filePath.startsWith(safeRoot + path.sep) || !fs.existsSync(filePath)) {
             return res.status(404).json({ success: false, message: "Document file is unavailable." });
         }
-        res.setHeader("Content-Type", doc.mime_type || "application/octet-stream");
-        res.setHeader("Content-Disposition", `attachment; filename="${String(doc.original_name || "document").replace(/[^a-zA-Z0-9._-]/g, "_")}"`);
         return res.sendFile(filePath);
     } catch (error) {
         console.error("DOCUMENT DOWNLOAD ERROR:", error);
@@ -1559,25 +1417,9 @@ async function buildDigitalDocument(record, documents, verifier = {}, requestCon
         return `<div class="section-title">${htmlEscape(section.title)}</div><div class="fields">${rows.map(([label, value]) => `<div class="field"><span>${htmlEscape(label)}</span><b>${htmlEscape(value)}</b></div>`).join("")}</div>`;
     }).join("");
 
-    const configuredBase = String(process.env.PUBLIC_BASE_URL || "").trim().replace(/\/$/, "");
-    const verificationUrl = configuredBase
-        ? `${configuredBase}/verify?record_id=${encodeURIComponent(record.record_id)}`
-        : "";
-    const qrPayload = verificationUrl || [
-        "BHURAKSHAK VERIFIED DIGITAL LAND RECORD",
-        `Record ID: ${record.record_id || ""}`,
-        `Applicant: ${record.user_name || ""}`,
-        `State: ${record.state || ""}`,
-        `District: ${record.district || ""}`,
-        `Village: ${record.village || ""}`,
-        `Khesara: ${record.khasra_number || record.survey_number || record.plot_number || ""}`,
-        `Khata: ${record.khata_number || ""}`,
-        `Khatiyan: ${record.khatiyan_number || ""}`,
-        `Area: ${record.area || ""}`,
-        `Land Type: ${record.land_type || ""}`,
-        `Status: Verified`
-    ].filter(Boolean).join("\n");
-    const qrSvg = buildQrSvg(qrPayload);
+    const origin = requestContext ? `${requestContext.protocol}://${requestContext.get("host")}` : "";
+    const verificationUrl = `${origin}/verify?record_id=${encodeURIComponent(record.record_id)}`;
+    const qrSvg = buildQrSvg(verificationUrl || `BHURAKSHAK|${record.record_id}`);
 
     return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BhuRakshak Verified Digital Land Record — ${htmlEscape(record.record_id)}</title>
 <style>
@@ -1591,8 +1433,9 @@ ${nationalEmblemUrl ? `<img class="emblem" src="${nationalEmblemUrl}" alt="Emble
 <div class="state-logo">${stateLogoUrl ? `<img src="${htmlEscape(stateLogoUrl)}" alt="${htmlEscape(stateName)} Government emblem" onerror="this.style.display='none'">` : ""}<span>${htmlEscape(stateName)} Government</span></div>
 </header>
 <div class="meta"><span class="record-id">Record ID: ${htmlEscape(record.record_id || "—")}</span><span>Generated: ${htmlEscape(generatedAt)}</span><span>Status: <b>${htmlEscape(record.status)}</b></span></div>
+<div class="notice">Prototype / Reference Record — Not an Official Government Certificate</div>
 ${renderedSections}
-<div class="bottom"><div class="notes"><b>Verification record</b><br>Record ID: ${htmlEscape(record.record_id || "—")}<br>Source: verified user submission stored in BhuRakshak.<br>Verification actor: ${htmlEscape(verifierName)} (${htmlEscape(verifierRole)}).</div><div class="sign"><div class="seal">VERIFIED<br>BY<br>${htmlEscape(verifierRole)}</div><b>${htmlEscape(verifierName)}</b><br>Authorized verification actor</div></div>
+<div class="bottom"><div class="notes"><b>Verification record</b><br>Record ID: ${htmlEscape(record.record_id || "—")}<br>Source: verified user submission stored in BhuRakshak.<br>No cadastral map / naksha is embedded in this digital document.<br>Verification actor: ${htmlEscape(verifierName)} (${htmlEscape(verifierRole)}).</div><div class="sign"><div class="seal">VERIFIED<br>BY<br>${htmlEscape(verifierRole)}</div><b>${htmlEscape(verifierName)}</b><br>Authorized verification actor</div></div>
 <footer class="footer"><span>BhuRakshak • Intelligent Land Record Digitization &amp; Validation System</span><span>Record ID: ${htmlEscape(record.record_id || "")}</span></footer></article><button class="print" onclick="window.print()">Print / Save as PDF</button></body></html>`;
 }
 
@@ -1636,22 +1479,6 @@ app.get("/verify", async (req,res) => {
         const rows=[["Record ID",safe.record_id],["Applicant",safe.user_name],["Father",safe.father_name],["Mother",safe.mother_name],["State",safe.state],["District",safe.district],["Village",safe.village],["Khasra",safe.khasra_number],["Survey No.",safe.survey_number],["Plot No.",safe.plot_number],["Khata No.",safe.khata_number],["Khatiyan No.",safe.khatiyan_number],["Area",safe.area],["Land Type",safe.land_type],["Ownership",safe.ownership_type],["Mutation Status",safe.mutation_status],["Registration ID",safe.registration_id],["ULPIN",safe.ulpin],["Verification Status",safe.status]].filter(([,v])=>String(v??"").trim());
         return res.type("html").send(`<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BhuRakshak Verification</title><style>body{font-family:Arial;background:#f3f5f7;margin:0;padding:20px;color:#17202a}.box{max-width:850px;margin:auto;background:white;border:1px solid #ccd3da;border-radius:14px;padding:24px}.verified{color:#166534;font-weight:800}.grid{display:grid;grid-template-columns:1fr 1fr;border:1px solid #ccd3da}.cell{padding:12px;border-right:1px solid #ccd3da;border-bottom:1px solid #ccd3da}.label{font-size:12px;color:#667085}.value{font-weight:700;margin-top:4px;word-break:break-word}@media(max-width:650px){.grid{grid-template-columns:1fr}}</style><main class="box"><h1>BhuRakshak</h1><p class="verified">✓ Verified Digital Land Record</p><p>QR verification result for Record ID <b>${htmlEscape(safe.record_id)}</b>.</p><div class="grid">${rows.map(([k,v])=>`<div class="cell"><div class="label">${htmlEscape(k)}</div><div class="value">${htmlEscape(v)}</div></div>`).join("")}</div></main>`);
     }catch(error){console.error("PUBLIC VERIFY ERROR:",error);return res.status(500).type("html").send("<h2>Unable to verify record.</h2>");}
-});
-
-app.get("/api/public/records/:id/digital-document", async (req, res) => {
-    try {
-        const record = await get("SELECT * FROM land_records WHERE id = ?", [req.params.id]);
-        if (!record || record.status !== "Verified") {
-            return res.status(404).json({ success:false, message:"Verified digital document not found." });
-        }
-        const documents = await getRecordDocuments(record.id);
-        const html = await buildDigitalDocument(record, documents, { role:"system", userId:"public-verification", displayName:"BhuRakshak Verification Service" }, null);
-        res.setHeader("Cache-Control", "no-store, public");
-        res.type("html").send(html);
-    } catch (error) {
-        console.error("PUBLIC DIGITAL DOCUMENT ERROR:", error);
-        res.status(500).json({ success:false, message:"Unable to generate the digital document." });
-    }
 });
 
 app.get("/api/admin/records/:id/digital-document", requireStaffAuth, async (req, res) => {
@@ -1890,31 +1717,26 @@ app.get(
 
                 );
 
-            // Keep the dashboard stats endpoint deliberately simple and Mongo-compatible.
-            // Duplicate analysis is done in memory here so one unsupported aggregation
-            // cannot make the whole statistics card fail.
-            const allRecords = await all(`SELECT * FROM land_records ORDER BY id DESC`);
-            const duplicateKeys = new Map();
-            for (const record of allRecords) {
-                const parts = [record.state, record.district, record.village, record.khasra_number]
-                    .map(value => String(value || '').trim().toLowerCase());
-                if (parts.some(Boolean) && parts.every(Boolean)) {
-                    const key = parts.join('|');
-                    duplicateKeys.set(key, (duplicateKeys.get(key) || 0) + 1);
-                }
-            }
-            const duplicateAlerts = [...duplicateKeys.values()]
-                .filter(count => count > 1)
-                .reduce((sum, count) => sum + count, 0);
+            const duplicateGroups = await all(`SELECT lower(trim(state)) state, lower(trim(district)) district, lower(trim(village)) village, lower(trim(khasra_number)) khasra_number, COUNT(*) count FROM land_records WHERE trim(state) <> '' AND trim(district) <> '' AND trim(village) <> '' AND trim(khasra_number) <> '' GROUP BY lower(trim(state)), lower(trim(district)), lower(trim(village)), lower(trim(khasra_number)) HAVING COUNT(*) > 1`);
+            const duplicateAlerts = duplicateGroups.reduce((sum, row) => sum + Number(row.count || 0), 0);
 
             return res.json({
-                success: true,
-                total: Number(total?.count || 0),
-                pending: Number(pending?.count || 0),
-                verified: Number(verified?.count || 0),
-                documents: Number(documents?.count || 0),
-                duplicates: duplicateAlerts,
-                updated_at: new Date().toISOString()
+
+                total:
+                    total.count,
+
+                pending:
+                    pending.count,
+
+                verified:
+                    verified.count,
+
+                documents:
+                    documents.count,
+
+                duplicates:
+                    duplicateAlerts
+
             });
 
 
